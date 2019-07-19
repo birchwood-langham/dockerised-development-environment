@@ -6,7 +6,7 @@ ARG user
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y -qq --fix-missing sudo zsh zsh-syntax-highlighting zplug zsh-theme-powerlevel9k fonts-powerline \
     openjdk-11-jdk go-dep build-essential locales apt-transport-https ca-certificates gnupg-agent \
-    software-properties-common httpie unzip && \
+    software-properties-common httpie unzip gosu && \
     locale-gen en_US.UTF-8
 
 # Setup user
@@ -27,8 +27,8 @@ RUN wget https://dl.bintray.com/sbt/debian/sbt-1.2.8.deb && \
 
 # Install Docker 
 RUN curl https://get.docker.com | bash && \ 
-    apt-get -y install docker-compose 
-#    usermod -aG docker tanq
+    apt-get -y install docker-compose && \
+    usermod -aG docker ${user}
 
 # Install protoc
 RUN PROTOC_ZIP=protoc-3.6.1-linux-x86_64.zip &&\
@@ -61,8 +61,6 @@ RUN mkdir /ct && cd /ct && \
 # Clean up apt
 RUN apt-get autoremove -y -qq && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-
-COPY entrypoint.sh /entrypoint.sh
 
 USER ${user}
 WORKDIR /home/${user}
@@ -134,6 +132,15 @@ RUN code --install-extension ms-vscode.go --force && \
 # Use this one to install the plugins etc.
 COPY fonts /home/${user}/.fonts
 COPY zshrc /home/${user}/.zshrc
+# COPY start-docker-user /home/${user}/start-docker-user
+
+# RUN sed -i 's|USER_NAME|'${user}'|g' /home/${user}/start-docker-user
+
+USER root
+
+COPY entrypoint.sh /entrypoint.sh
+
+RUN sed -i 's|USER_NAME|'${user}'|g' /entrypoint.sh
 
 VOLUME ["/home/${user}/go", "/home/${user}/.config", "/home/${user}/.ssh"]
 
