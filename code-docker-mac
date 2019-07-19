@@ -1,0 +1,12 @@
+#!/bin/bash
+
+open -a XQuartz
+IP=$(ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
+
+xhost + $IP
+
+# Give it a couple of seconds to initiate properly
+sleep 1
+
+
+docker run -dit --rm -e DISPLAY=$IP:0 -v /tmp/.X11-unix:/tmp/.X11-unix -v $HOME/develop/go:/home/user/go -v $HOME/.atom-docker:/home/user/.atom --name=atom birchwoodlangham/ubuntu-go-atom:1.8
