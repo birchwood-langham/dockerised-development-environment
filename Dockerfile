@@ -84,10 +84,10 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh &
     sh Miniconda3-latest-Linux-x86_64.sh -b && \
     rm Miniconda3-latest-Linux-x86_64.sh
 
-# We are going to expose the Code configuration files in the .code folder under the user directory as it's easier to remember
-# so we need to create a symlink to the actual configuration folder
-RUN mkdir -p /home/${user}/.config/Code && \  
-    ln -s /home/${user}/.config/Code /home/${user}/.code
+# # We are going to expose the Code configuration files in the .code folder under the user directory as it's easier to remember
+# # so we need to create a symlink to the actual configuration folder
+# RUN mkdir -p /home/${user}/.config/Code && \  
+#     ln -s /home/${user}/.config/Code /home/${user}/.code
 
 # Add the go tools required by the vscode.go plugin
 RUN go get -u -v github.com/ramya-rao-a/go-outline  && \
@@ -135,7 +135,7 @@ RUN code --install-extension ms-vscode.go --force && \
 COPY fonts /home/${user}/.fonts
 COPY zshrc /home/${user}/.zshrc
 
-VOLUME ["/home/${user}/go", "/home/${user}/.code"]
+VOLUME ["/home/${user}/go", "/home/${user}/.config", "/home/${user}/.ssh"]
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
