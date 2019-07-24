@@ -5,7 +5,7 @@ if [[ -f .env ]]; then
 fi
 
 if [[ -z $USER_NAME ]]; then
-  USER_NAME=$(id -u)
+  USER_NAME=$(id -un)
 fi
 
 docker run -dit --rm -e DISPLAY=$DISPLAY \
