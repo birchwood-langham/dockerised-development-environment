@@ -58,6 +58,12 @@ RUN mkdir /ct && cd /ct && \
     mv etc /etc/ct && \
     cd / && rm -fr /ct
 
+RUN mkdir -p /opt/idea && \
+    wget https://download.jetbrains.com/idea/ideaIU-2019.2-no-jbr.tar.gz && \
+    tar -C /opt/idea -zxf ideaIU-2019.2-no-jbr.tar.gz --strip-components=1 && \
+    rm ideaIU-2019.2-no-jbr.tar.gz && \
+    ln -s /opt/idea/bin/idea.sh /usr/local/bin/idea.sh
+    
 # Clean up apt
 RUN apt-get autoremove -y -qq && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -142,7 +148,7 @@ COPY entrypoint.sh /entrypoint.sh
 
 RUN sed -i 's|USER_NAME|'${user}'|g' /entrypoint.sh
 
-VOLUME ["/home/${user}/go", "/home/${user}/.config", "/home/${user}/.ssh"]
+VOLUME ["/home/${user}/go", "/home/${user}/.config", "/home/${user}/.ssh", "/home/${user}/.IntelliJIdea2019.2"]
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 

@@ -8,7 +8,7 @@ if [[ -z $USER_NAME ]]; then
   USER_NAME=$(id -un)
 fi
 
-docker run -dit --rm -e DISPLAY=$DISPLAY \
+docker run -it --rm -e DISPLAY=$DISPLAY \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
   -v $HOME/go:/home/${USER_NAME}/go \
@@ -17,6 +17,7 @@ docker run -dit --rm -e DISPLAY=$DISPLAY \
   -v $HOME/.ssh:/home/${USER_NAME}/.ssh \
   -v $HOME/.netrc:/home/${USER_NAME}/.netrc \
   -v $HOME/.gitconfig:/home/${USER_NAME}/.gitconfig \
+  -v $HOME/.IntelliJIdea2019.2:/home/${USER_NAME}/.IntelliJIdea2019.2 \
   -v /run/user/$(id -u):/run/user/$(id -u) \
   -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
   --ipc=host --name=dev-environment birchwoodlangham/code-dev-environment:latest zsh
