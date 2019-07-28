@@ -1,1 +1,3 @@
+#!/bin/bash
+
 docker build --build-arg password="${USER_NAME}:${USER_PASSWORD}" --build-arg user=${USER_NAME} -f $DOCKERFILE_PATH -t $IMAGE_NAME .
