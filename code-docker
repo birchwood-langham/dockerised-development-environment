@@ -8,6 +8,10 @@ if [[ -z $USER_NAME ]]; then
   USER_NAME=$(id -u)
 fi
 
+IP=`ip route get 1 | head -1 | sed 's/.*src //g' | cut -d ' ' -f1`
+
+xhost + $IP
+
 docker run -dit --rm -e DISPLAY=$DISPLAY \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
   -v /var/run/docker.sock:/var/run/docker.sock \
@@ -19,4 +23,5 @@ docker run -dit --rm -e DISPLAY=$DISPLAY \
   -v $HOME/.gitconfig:/home/${USER_NAME}/.gitconfig \
   -v /run/user/$(id -u):/run/user/$(id -u) \
   -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
-  --ipc=host --name=code birchwoodlangham/code-dev-environment:latest
+  --ipc=host --name=code birchwoodlangham/code-dev-environment:latest code --verbose --disable-gpu
+

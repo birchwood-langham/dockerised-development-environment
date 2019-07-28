@@ -8,9 +8,14 @@ if [[ -z $USER_NAME ]]; then
   USER_NAME=$(id -un)
 fi
 
-docker run -it --rm -e DISPLAY=$DISPLAY \
+IP=`ip route get 1 | head -1 | sed 's/.*src //g' | cut -d ' ' -f1`
+
+xhost + $IP
+
+docker run -it --rm \
   -v /tmp/.X11-unix:/tmp/.X11-unix \
-  --mount type=bind,source=/var/run/docker.sock,target=/var/run/docker.sock \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /run/user/$(id -u):/run/user/$(id -u) \
   -v $HOME/go:/home/${USER_NAME}/go \
   -v $HOME/code:/home/${USER_NAME}/code \
   -v $HOME/.dev-env-config:/home/${USER_NAME}/.config \
@@ -18,7 +23,11 @@ docker run -it --rm -e DISPLAY=$DISPLAY \
   -v $HOME/.netrc:/home/${USER_NAME}/.netrc \
   -v $HOME/.gitconfig:/home/${USER_NAME}/.gitconfig \
   -v $HOME/.IntelliJIdea2019.2:/home/${USER_NAME}/.IntelliJIdea2019.2 \
-  -v /run/user/$(id -u):/run/user/$(id -u) \
+  -v $HOME/.java:/home/${USER_NAME}/.java \
+  -v $HOME/.fonts:/home/${USER_NAME}/.fonts \
+  -v $HOME/.Xresources:/home/${USER_NAME}/.Xresources \
+  -e DISPLAY=$DISPLAY \
   -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
-  --ipc=host --name=dev-environment birchwoodlangham/code-dev-environment:latest zsh
-
+  --ipc=host \
+  --name=dev-environment \
+  birchwoodlangham/code-dev-environment:latest 

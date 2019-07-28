@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-sudo groupmod -g $(stat -c %g /var/run/docker.sock) docker
-su USER_NAME

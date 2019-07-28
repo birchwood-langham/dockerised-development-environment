@@ -13,10 +13,11 @@ RUN apt-get update && apt-get upgrade -y && \
 RUN  useradd -d /home/${user} -m -U ${user} -G sudo -s /usr/bin/zsh && \
     echo "${password}" | chpasswd
 
-# Install Go globally
+# Install Go globally and link to /usr/lib/go for compatibility with Arch host
 RUN wget https://dl.google.com/go/go1.12.7.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf go1.12.7.linux-amd64.tar.gz && \
-    rm go1.12.7.linux-amd64.tar.gz
+    rm go1.12.7.linux-amd64.tar.gz && \
+    ln -s /usr/local/go /usr/lib/go
 
 # Install SBT and Scala
 RUN wget https://dl.bintray.com/sbt/debian/sbt-1.2.8.deb && \
@@ -138,9 +139,6 @@ RUN code --install-extension ms-vscode.go --force && \
 # Use this one to install the plugins etc.
 COPY fonts /home/${user}/.fonts
 COPY zshrc /home/${user}/.zshrc
-# COPY start-docker-user /home/${user}/start-docker-user
-
-# RUN sed -i 's|USER_NAME|'${user}'|g' /home/${user}/start-docker-user
 
 USER root
 
@@ -152,4 +150,5 @@ VOLUME ["/home/${user}/go", "/home/${user}/.config", "/home/${user}/.ssh", "/hom
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD [ "/usr/bin/code", "--verbose", "--disable-gpu" ]
+# CMD [ "/usr/bin/code", "--verbose", "--disable-gpu" ]
+CMD [ "zsh" ]
