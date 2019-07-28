@@ -25,7 +25,6 @@ docker run -it --rm \
   -v $HOME/.IntelliJIdea2019.2:/home/${USER_NAME}/.IntelliJIdea2019.2 \
   -v $HOME/.java:/home/${USER_NAME}/.java \
   -v $HOME/.fonts:/home/${USER_NAME}/.fonts \
-  -v $HOME/.Xresources:/home/${USER_NAME}/.Xresources \
   -e DISPLAY=$DISPLAY \
   -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
   --ipc=host \
