@@ -1,12 +1,12 @@
-# Ubuntu Gdevelopment environment with Visual Studio Code editor
+# Ubuntu development environment with Visual Studio Code editor and IntelliJ
 
-Based on the official Ubuntu 18.04, this image installs Go, OpenJDK 11, Rust, Docker and Visual Studio Code
+Based on the official Ubuntu 18.04, this image installs Go, OpenJDK 11, Rust, Docker, Visual Studio Code and IntelliJ
 
 ## Instructions
 
 ### Build
 
-Create a .env file with the environment variable USER_PASSWORD to set the sudo password for the user.
+Use the sample.env to create a .env file with your environment variables.
 
 By default the build script will use the current user name when creating a user for the container and set the password to whatever you specified in the USER_PASSWORD environment variable.
 
@@ -57,4 +57,4 @@ With regards to the $HOME/develop/go path, this will become your $GOPATH locatio
 
 ## Change Log
 
-=======
+============
