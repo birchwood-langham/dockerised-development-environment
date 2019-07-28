@@ -29,4 +29,4 @@ docker run -it --rm \
   -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
   --ipc=host \
   --name=dev-environment \
-  birchwoodlangham/code-dev-environment:latest 
+  birchwoodlangham/dockerised-development-environment:latest 
