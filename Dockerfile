@@ -64,6 +64,12 @@ RUN mkdir -p /opt/idea && \
     tar -C /opt/idea -zxf ideaIU-2019.2-no-jbr.tar.gz --strip-components=1 && \
     rm ideaIU-2019.2-no-jbr.tar.gz && \
     ln -s /opt/idea/bin/idea.sh /usr/local/bin/idea.sh
+
+# Install Postman
+RUN wget https://dl.pstmn.io/download/latest/linux64 -O Postman-linux.tar.gz && \
+    tar -C /opt -xf Postman-linux.tar.gz && \
+    ln -s /opt/Postman/Postman /usr/local/bin/Postman && \
+    rm Postman-linux.tar.gz
     
 # Clean up apt
 RUN apt-get autoremove -y -qq && \
