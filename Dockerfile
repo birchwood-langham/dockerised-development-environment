@@ -50,6 +50,14 @@ RUN wget https://storage.googleapis.com/kubernetes-helm/helm-v2.14.1-linux-amd64
     rm -f helm-v2.14.1-linux-amd64.tar.gz &&\
     rm -fr linux-amd64
 
+# Install Nodejs and Yarn
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
+    curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+    apt-get update && \
+    apt-get install -y nodejs && \
+    apt-get install yarn
+
 ENV CT_VERSION=2.3.3
 
 RUN mkdir /ct && cd /ct && \ 
@@ -140,7 +148,8 @@ RUN code --install-extension ms-vscode.go --force && \
     code --install-extension zxh404.vscode-proto3 --force && \
     code --install-extension dotjoshjohnson.xml --force && \
     code --install-extension redhat.vscode-yaml --force && \
-    code --install-extension donjayamanne.python-extension-pack --force
+    code --install-extension donjayamanne.python-extension-pack --force && \
+    code --install-extension nodesource.vscode-for-node-js-development-pack --force
 
 # Use this one to install the plugins etc.
 COPY fonts /home/${user}/.fonts
