@@ -72,6 +72,8 @@ services:
     ipc: host
     command: [ "zsh" ]
     tty: true
+    security_opt: 
+      - seccomp:unconfined
     volumes:
       - type: bind
         source: /tmp/.X11-unix
