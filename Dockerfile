@@ -6,7 +6,7 @@ ARG user
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y -qq --fix-missing sudo zsh zsh-syntax-highlighting zplug zsh-theme-powerlevel9k fonts-powerline \
     openjdk-11-jdk go-dep build-essential locales apt-transport-https ca-certificates gnupg-agent \
-    software-properties-common httpie unzip gosu && \
+    software-properties-common httpie unzip gosu git-flow && \
     locale-gen en_US.UTF-8
 
 # Setup user
