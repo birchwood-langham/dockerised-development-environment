@@ -154,6 +154,7 @@ RUN code --install-extension ms-vscode.go --force && \
 # Use this one to install the plugins etc.
 COPY fonts /home/${user}/.fonts
 COPY zshrc /home/${user}/.zshrc
+COPY Xdefaults /home/${user}/.Xdefaults
 
 USER root
 
