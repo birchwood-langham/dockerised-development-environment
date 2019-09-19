@@ -14,16 +14,16 @@ RUN  useradd -d /home/${user} -m -U ${user} -G sudo -s /usr/bin/zsh && \
     echo "${password}" | chpasswd
 
 # Install Go globally and link to /usr/lib/go for compatibility with Arch host
-RUN wget https://dl.google.com/go/go1.12.7.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.12.7.linux-amd64.tar.gz && \
-    rm go1.12.7.linux-amd64.tar.gz && \
+RUN wget https://dl.google.com/go/go1.13.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.13.linux-amd64.tar.gz && \
+    rm go1.13.linux-amd64.tar.gz && \
     ln -s /usr/local/go /usr/lib/go
 
 # Install SBT and Scala
-RUN wget https://dl.bintray.com/sbt/debian/sbt-1.2.8.deb && \
-    wget http://downloads.lightbend.com/scala/2.12.8/scala-2.12.8.deb && \
-    dpkg -i sbt-1.2.8.deb && \
-    dpkg -i scala-2.12.8.deb && \
+RUN wget https://dl.bintray.com/sbt/debian/sbt-1.3.0.deb && \
+    wget http://downloads.lightbend.com/scala/2.13.1/scala-2.13.1.deb && \
+    dpkg -i sbt-1.3.0.deb && \
+    dpkg -i scala-2.13.1.deb && \
     rm *.deb    
 
 # Install Docker 
@@ -32,8 +32,8 @@ RUN curl https://get.docker.com | bash && \
     usermod -aG docker ${user}
 
 # Install protoc
-RUN PROTOC_ZIP=protoc-3.6.1-linux-x86_64.zip &&\
-    curl -OL https://github.com/google/protobuf/releases/download/v3.6.1/$PROTOC_ZIP  &&\
+RUN PROTOC_ZIP=protoc-3.9.1-linux-x86_64.zip &&\
+    curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.9.1/$PROTOC_ZIP  &&\
     unzip -o $PROTOC_ZIP -d /usr/local bin/protoc  &&\
     rm -f $PROTOC_ZIP
 
@@ -44,10 +44,10 @@ RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add 
     apt-get install -y kubectl
 
 # Install Helm
-RUN wget https://storage.googleapis.com/kubernetes-helm/helm-v2.14.1-linux-amd64.tar.gz && \
-    tar xzf helm-v2.14.1-linux-amd64.tar.gz && \
+RUN wget https://storage.googleapis.com/kubernetes-helm/helm-v2.14.3-linux-amd64.tar.gz && \
+    tar xzf helm-v2.14.3-linux-amd64.tar.gz && \
     mv linux-amd64/helm /usr/local/bin/ && \
-    rm -f helm-v2.14.1-linux-amd64.tar.gz &&\
+    rm -f helm-v2.14.3-linux-amd64.tar.gz &&\
     rm -fr linux-amd64
 
 # Install Nodejs and Yarn
@@ -68,9 +68,9 @@ RUN mkdir /ct && cd /ct && \
     cd / && rm -fr /ct
 
 RUN mkdir -p /opt/idea && \
-    wget https://download.jetbrains.com/idea/ideaIU-2019.2-no-jbr.tar.gz && \
-    tar -C /opt/idea -zxf ideaIU-2019.2-no-jbr.tar.gz --strip-components=1 && \
-    rm ideaIU-2019.2-no-jbr.tar.gz && \
+    wget https://download.jetbrains.com/idea/ideaIU-2019.2.2-no-jbr.tar.gz && \
+    tar -C /opt/idea -zxf ideaIU-2019.2.2-no-jbr.tar.gz --strip-components=1 && \
+    rm ideaIU-2019.2.2-no-jbr.tar.gz && \
     ln -s /opt/idea/bin/idea.sh /usr/local/bin/idea.sh
 
 # Install Postman

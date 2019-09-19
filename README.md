@@ -58,3 +58,5 @@ With regards to the $HOME/develop/go path, this will become your $GOPATH locatio
 ## Change Log
 
 ============
+
+2019-09-19: Version bump on Go, Scala, SBT, IntelliJ, Protocol buffers etc.
