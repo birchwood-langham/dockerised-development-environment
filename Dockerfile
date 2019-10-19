@@ -3,6 +3,14 @@ FROM birchwoodlangham/ubuntu-base-code:latest
 ARG password
 ARG user
 
+ENV GO_PACKAGE="go1.13.3.linux-amd64.tar.gz"
+ENV SBT_PACKAGE="sbt-1.3.3.deb"
+ENV SCALA_PACKAGE="scala-2.13.1.deb"
+ENV PROTOC_VER="3.10.0"
+ENV HELM_VER="2.15.0"
+ENV CT_VERSION="2.3.3"
+ENV IDEA_VER="2019.2.3"
+
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y -qq --fix-missing sudo zsh zsh-syntax-highlighting zplug zsh-theme-powerlevel9k fonts-powerline \
     openjdk-11-jdk go-dep build-essential locales apt-transport-https ca-certificates gnupg-agent \
@@ -14,16 +22,16 @@ RUN  useradd -d /home/${user} -m -U ${user} -G sudo -s /usr/bin/zsh && \
     echo "${password}" | chpasswd
 
 # Install Go globally and link to /usr/lib/go for compatibility with Arch host
-RUN wget https://dl.google.com/go/go1.13.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.13.linux-amd64.tar.gz && \
-    rm go1.13.linux-amd64.tar.gz && \
+RUN wget https://dl.google.com/go/${GO_PACKAGE} && \
+    tar -C /usr/local -xzf ${GO_PACKAGE} && \
+    rm ${GO_PACKAGE} && \
     ln -s /usr/local/go /usr/lib/go
 
 # Install SBT and Scala
-RUN wget https://dl.bintray.com/sbt/debian/sbt-1.3.0.deb && \
-    wget http://downloads.lightbend.com/scala/2.13.1/scala-2.13.1.deb && \
-    dpkg -i sbt-1.3.0.deb && \
-    dpkg -i scala-2.13.1.deb && \
+RUN wget https://dl.bintray.com/sbt/debian/${SBT_PACKAGE} && \
+    wget http://downloads.lightbend.com/scala/2.13.1/${SCALA_PACKAGE} && \
+    dpkg -i ${SBT_PACKAGE} && \
+    dpkg -i ${SCALA_PACKAGE} && \
     rm *.deb    
 
 # Install Docker 
@@ -32,8 +40,8 @@ RUN curl https://get.docker.com | bash && \
     usermod -aG docker ${user}
 
 # Install protoc
-RUN PROTOC_ZIP=protoc-3.9.1-linux-x86_64.zip &&\
-    curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v3.9.1/$PROTOC_ZIP  &&\
+RUN PROTOC_ZIP=protoc-${PROTOC_VER}-linux-x86_64.zip &&\
+    curl -OL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/$PROTOC_ZIP  &&\
     unzip -o $PROTOC_ZIP -d /usr/local bin/protoc  &&\
     rm -f $PROTOC_ZIP
 
@@ -44,10 +52,10 @@ RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add 
     apt-get install -y kubectl
 
 # Install Helm
-RUN wget https://storage.googleapis.com/kubernetes-helm/helm-v2.14.3-linux-amd64.tar.gz && \
-    tar xzf helm-v2.14.3-linux-amd64.tar.gz && \
+RUN wget https://get.helm.sh/helm-v${HELM_VER}-linux-amd64.tar.gz && \
+    tar xzf helm-v${HELM_VER}-linux-amd64.tar.gz && \
     mv linux-amd64/helm /usr/local/bin/ && \
-    rm -f helm-v2.14.3-linux-amd64.tar.gz &&\
+    rm -f helm-v${HELM_VER}-linux-amd64.tar.gz &&\
     rm -fr linux-amd64
 
 # Install Nodejs and Yarn
@@ -58,8 +66,6 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
     apt-get install -y nodejs && \
     apt-get install yarn
 
-ENV CT_VERSION=2.3.3
-
 RUN mkdir /ct && cd /ct && \ 
     curl -Lo chart-testing_${CT_VERSION}_linux_amd64.tar.gz https://github.com/helm/chart-testing/releases/download/v${CT_VERSION}/chart-testing_${CT_VERSION}_linux_amd64.tar.gz  && \
     tar xzf chart-testing_${CT_VERSION}_linux_amd64.tar.gz  && \
@@ -68,9 +74,9 @@ RUN mkdir /ct && cd /ct && \
     cd / && rm -fr /ct
 
 RUN mkdir -p /opt/idea && \
-    wget https://download.jetbrains.com/idea/ideaIU-2019.2.2-no-jbr.tar.gz && \
-    tar -C /opt/idea -zxf ideaIU-2019.2.2-no-jbr.tar.gz --strip-components=1 && \
-    rm ideaIU-2019.2.2-no-jbr.tar.gz && \
+    wget https://download.jetbrains.com/idea/ideaIU-${IDEA_VER}-no-jbr.tar.gz && \
+    tar -C /opt/idea -zxf ideaIU-${IDEA_VER}-no-jbr.tar.gz --strip-components=1 && \
+    rm ideaIU-${IDEA_VER}-no-jbr.tar.gz && \
     ln -s /opt/idea/bin/idea.sh /usr/local/bin/idea.sh
 
 # Install Postman
@@ -152,9 +158,15 @@ RUN code --install-extension ms-vscode.go --force && \
     code --install-extension nodesource.vscode-for-node-js-development-pack --force
 
 # Use this one to install the plugins etc.
+COPY vim/vimrc /home/${user}/.vimrc
+COPY vim/vimrc.local /home/${user}/.vimrc.local
+COPY vim/vimrc.local.bundles /home/${user}/.vimrc.local.bundles
 COPY fonts /home/${user}/.fonts
 COPY zshrc /home/${user}/.zshrc
 COPY Xdefaults /home/${user}/.Xdefaults
+
+RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim && \
+    vim +PlugInstall +qall
 
 USER root
 
