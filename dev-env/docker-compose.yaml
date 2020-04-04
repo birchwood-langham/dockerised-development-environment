@@ -4,97 +4,70 @@ volumes:
   postgres-db:
 
 services:
+  etcd:
+    image: bitnami/etcd:latest
+    hostname: etcd
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+    restart: on-failure
   consul:
     image: consul
     hostname: consul
     container_name: consul
+    restart: on-failure
   redis:
     image: redis:latest
     container_name: redis
     ports:
       - "6379:6379"
+    restart: on-failure
   # Micro API service for handling and routing Go-Micro based services
   micro-api:
     image: microhq/micro:latest
     hostname: micro-api
     container_name: micro-api
-    env_file: 
+    env_file:
       - ./envfiles/micro.env
     command: ["api"]
     ports:
       - 8080:8080
+    restart: on-failure
   # Micro Web service for monitoring Go-Micro based services
   micro-web:
     image: microhq/micro:latest
     hostname: micro-web
     container_name: micro-web
-    env_file: 
+    env_file:
       - ./envfiles/micro.env
     ports:
       - 8082:8082
     command: ["web"]
     depends_on:
       - micro-api
-  zookeeper-1:
-    image: ${ZOOKEEPER_IMAGE}
+    restart: on-failure
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
     env_file:
-      - ./envfiles/zookeeper-full.env
+      - ./envfiles/zookeeper.env
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
-    expose: 
+    expose:
       - 2181
-  zookeeper-2:
-    image: ${ZOOKEEPER_IMAGE}
+    restart: on-failure
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
     env_file:
-      - ./envfiles/zookeeper-full.env
-    environment:
-      ZOOKEEPER_SERVER_ID: 2
-      ZOOKEEPER_CLIENT_PORT: 2181
-    expose: 
-      - 2181
-  zookeeper-3:
-    image: ${ZOOKEEPER_IMAGE}
-    env_file:
-      - ./envfiles/zookeeper-full.env
-    environment:
-      ZOOKEEPER_SERVER_ID: 3
-      ZOOKEEPER_CLIENT_PORT: 2181
-    expose: 
-      - 2181
-  kafka-1:
-    image: ${KAFKA_IMAGE}
-    depends_on: 
-      - zookeeper-1
-      - zookeeper-2
-      - zookeeper-3
-    env_file:
-      - ./envfiles/kafka-full.env
+      - ./envfiles/kafka.env
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-1:9092
-  kafka-2:
-    image: ${KAFKA_IMAGE}
-    depends_on: 
-      - zookeeper-1
-      - zookeeper-2
-      - zookeeper-3
-    env_file:
-      - ./envfiles/kafka-full.env
-    environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-2:9092
-  kafka-3:
-    image: ${KAFKA_IMAGE}
-    depends_on: 
-      - zookeeper-1
-      - zookeeper-2
-      - zookeeper-3
-    env_file:
-      - ./envfiles/kafka-full.env
-    environment:
-      KAFKA_BROKER_ID: 3
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-3:9092
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+    restart: on-failure
+    ports:
+      - 9092:9092
   postgres:
     image: postgres:latest
     container_name: postgres
@@ -105,16 +78,20 @@ services:
       POSTGRES_PASSWORD: postgres
     expose:
       - 5432
-  dev-env: 
-    image: ${DEV_ENV_IMAGE}
+    ports:
+      - 5432:5432
+  dev-env:
+    image: birchwoodlangham/dockerised-development-environment:latest
     container_name: dev-env
-    environment: 
+    environment:
       DBUS_SESSION_BUS_ADDRESS: unix:path=/var/run/user/1000/bus
-      DISPLAY: 
+      DISPLAY:
     ipc: host
-    command: [ "zsh" ]
-    tty: true
-    security_opt: 
+    #    command: ["zsh"]
+    #    tty: true
+    ports:
+      - 8090:8080
+    security_opt:
       - seccomp:unconfined
     volumes:
       - type: bind
@@ -127,14 +104,8 @@ services:
         source: /run/user/${USER_ID}
         target: /run/user/${USER_ID}
       - type: bind
-        source: $HOME/go
-        target: /home/${USER_NAME}/go
-      - type: bind
         source: $HOME/code
         target: /home/${USER_NAME}/code
-      - type: bind
-        source: $HOME/.dev-env-config
-        target: /home/${USER_NAME}/.config
       - type: bind
         source: $HOME/.ssh
         target: /home/${USER_NAME}/.ssh
@@ -145,11 +116,17 @@ services:
         source: $HOME/.gitconfig
         target: /home/${USER_NAME}/.gitconfig
       - type: bind
-        source: $HOME/.IntelliJIdea2019.2
-        target: /home/${USER_NAME}/.IntelliJIdea2019.2
+        source: $HOME/.dev-env/IntelliJIdea
+        target: /home/${USER_NAME}/.IntelliJIdea2019.3
       - type: bind
         source: $HOME/.java
         target: /home/${USER_NAME}/.java
       - type: bind
         source: $HOME/.fonts
         target: /home/${USER_NAME}/.fonts
+      - type: bind
+        source: $HOME/code-server/extensions
+        target: /code-server/extensions
+      - type: bind
+        source: $HOME/code-server/user-data/User
+        target: /code-server/user-data/User
