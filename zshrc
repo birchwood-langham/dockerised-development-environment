@@ -7,7 +7,7 @@ export ZSH="/home/$(whoami)/.oh-my-zsh"
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 # ZSH_THEME="robbyrussell"
 POWERLEVEL9K_MODE='nerdfont-complete'
-ZSH_THEME="powerlevel9k/powerlevel9k"
+# ZSH_THEME="powerlevel9k/powerlevel9k"
 
 if [ `tput colors` != "256" ]; then
 	ZSH_THEME="robbyrussell"
@@ -99,62 +99,7 @@ export VISUAL=$EDITOR
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX="%{%F{249}%}\u250f"
-POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%{%F{249}%}\u2517%{%F{default}%} "
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=4
-POWERLEVEL9K_SHORTEN_STRATEGY="truncate_middle"
-POWERLEVEL9K_OS_ICON_BACKGROUND="black"
-POWERLEVEL9K_OS_ICON_FOREGROUND="249"
-POWERLEVEL9K_TODO_BACKGROUND="black"
-POWERLEVEL9K_TODO_FOREGROUND="249"
-POWERLEVEL9K_DIR_HOME_BACKGROUND="black"
-POWERLEVEL9K_DIR_HOME_FOREGROUND="249"
-POWERLEVEL9K_DIR_HOME_SUBFOLDER_BACKGROUND="black"
-POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND="249"
-POWERLEVEL9K_DIR_DEFAULT_BACKGROUND="black"
-POWERLEVEL9K_DIR_DEFAULT_FOREGROUND="249"
-POWERLEVEL9K_STATUS_OK_BACKGROUND="black"
-POWERLEVEL9K_STATUS_OK_FOREGROUND="green"
-POWERLEVEL9K_STATUS_ERROR_BACKGROUND="black"
-POWERLEVEL9K_STATUS_ERROR_FOREGROUND="red"
-POWERLEVEL9K_NVM_BACKGROUND="black"
-POWERLEVEL9K_NVM_FOREGROUND="249"
-POWERLEVEL9K_NVM_VISUAL_IDENTIFIER_COLOR="green"
-POWERLEVEL9K_RVM_BACKGROUND="black"
-POWERLEVEL9K_RVM_FOREGROUND="249"
-POWERLEVEL9K_RVM_VISUAL_IDENTIFIER_COLOR="red"
-POWERLEVEL9K_LOAD_CRITICAL_BACKGROUND="black"
-POWERLEVEL9K_LOAD_WARNING_BACKGROUND="black"
-POWERLEVEL9K_LOAD_NORMAL_BACKGROUND="black"
-POWERLEVEL9K_LOAD_CRITICAL_FOREGROUND="249"
-POWERLEVEL9K_LOAD_WARNING_FOREGROUND="249"
-POWERLEVEL9K_LOAD_NORMAL_FOREGROUND="249"
-POWERLEVEL9K_LOAD_CRITICAL_VISUAL_IDENTIFIER_COLOR="red"
-POWERLEVEL9K_LOAD_WARNING_VISUAL_IDENTIFIER_COLOR="yellow"
-POWERLEVEL9K_LOAD_NORMAL_VISUAL_IDENTIFIER_COLOR="green"
-POWERLEVEL9K_RAM_BACKGROUND="black"
-POWERLEVEL9K_RAM_FOREGROUND="249"
-POWERLEVEL9K_RAM_ELEMENTS=(ram_free)
-POWERLEVEL9K_BATTERY_LOW_BACKGROUND="black"
-POWERLEVEL9K_BATTERY_CHARGING_BACKGROUND="black"
-POWERLEVEL9K_BATTERY_CHARGED_BACKGROUND="black"
-POWERLEVEL9K_BATTERY_DISCONNECTED_BACKGROUND="black"
-POWERLEVEL9K_BATTERY_LOW_FOREGROUND="249"
-POWERLEVEL9K_BATTERY_CHARGING_FOREGROUND="249"
-POWERLEVEL9K_BATTERY_CHARGED_FOREGROUND="249"
-POWERLEVEL9K_BATTERY_DISCONNECTED_FOREGROUND="249"
-POWERLEVEL9K_BATTERY_LOW_VISUAL_IDENTIFIER_COLOR="red"
-POWERLEVEL9K_BATTERY_CHARGING_VISUAL_IDENTIFIER_COLOR="yellow"
-POWERLEVEL9K_BATTERY_CHARGED_VISUAL_IDENTIFIER_COLOR="green"
-POWERLEVEL9K_BATTERY_DISCONNECTED_VISUAL_IDENTIFIER_COLOR="249"
-POWERLEVEL9K_TIME_BACKGROUND="black"
-POWERLEVEL9K_TIME_FOREGROUND="249"
-POWERLEVEL9K_TIME_FORMAT="%D{%H:%M:%S} \Uf43a"
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=('status' 'os_icon' 'todo' 'context' 'ssh' 'virtualenv' 'anaconda' 'dir' 'vcs')
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=('nvm' 'rvm' 'load' 'ram_joined' 'battery' 'time')
-
-source /usr/share/zplug/init.zsh
+source ~/.zplug/init.zsh
 
 zplug "plugins/git", from:oh-my-zsh
 zplug "plugins/sbt", from:oh-my-zsh
@@ -163,6 +108,9 @@ zplug "plugins/ubuntu", from:oh-my-zsh
 zplug "plugins/virtualenv", from:oh-my-zsh
 zplug "plugins/golang", from:oh-my-zsh
 zplug "plugins/virtualenvwrapper", from:oh-my-zsh
+zplug "plugins/z", from:oh-my-zsh
+
+zplug romkatv/powerlevel10k, as:theme, depth:1
 
 # Set the priority when loading
 # e.g., zsh-syntax-highlighting must be loaded
@@ -171,8 +119,8 @@ zplug "plugins/virtualenvwrapper", from:oh-my-zsh
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
 # Install plugins if there are plugins that have not been installed
-if ! zplug check --verbose; then
-  echo; zplug install
+if ! zplug check; then
+  zplug install
 fi
 
 # Then, source plugins and add commands to $PATH
@@ -182,4 +130,5 @@ zplug load
 
 [ -f /home/$(whoami)/miniconda3/etc/profile.d/conda.sh ] && source /home/$(whoami)//miniconda3/etc/profile.d/conda.sh
 
-source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

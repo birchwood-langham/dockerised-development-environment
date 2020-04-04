@@ -10,14 +10,9 @@ if [[ -z $VERSION ]]; then
   exit 1
 fi
 
-if [[ -z $USER_PASSWORD ]]; then
-  echo Password for the container user has not been set, terminating
-  exit 1
-fi
-
 if [[ -z $USER_NAME ]]; then
   USER_NAME=$(id -u)
 fi
 
-docker build --build-arg password="${USER_NAME}:${USER_PASSWORD}" --build-arg user=${USER_NAME} -t birchwoodlangham/dockerised-development-environment:${VERSION} .
+docker build --build-arg user=${USER_NAME} -t birchwoodlangham/dockerised-development-environment:${VERSION} .
 docker tag birchwoodlangham/dockerised-development-environment:${VERSION} birchwoodlangham/dockerised-development-environment:latest

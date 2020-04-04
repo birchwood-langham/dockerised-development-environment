@@ -1,0 +1,178 @@
+#!/usr/bin/env bash
+
+usage() {
+  echo "Usage: denv command [options...]"
+  echo "where  command can be:"
+  echo "           stack - start a development stack"
+  echo "                   options are:"
+  echo "                       dev - a development stack with 1 kafka broker, 1 zookeeper etc."
+  echo "                       full - a full stack with 3 kafka brokers, 3 zookeeper etc."
+  echo "           shell - start an interactive shell in the development environment container"
+  echo "                   this command takes no other parameters"
+  echo "           run   - run an application from the development environment container"
+  echo "                   options are:"
+  echo "                        the application you want to run, e.g. idea.sh, Postman"
+  echo "           exec  - execute a command from the development environment container"
+  echo "                   options are:"
+  echo "                        the full command you want to run, e.g. ls -l, ps aux | grep ..."
+  echo "           code-server - start the code server standalone without any other services"
+  echo "                   this command takes no other parameters"
+}
+
+if [ $# != 0 ] && [ $1 == "--help" ]; then
+  usage
+  exit
+fi
+
+if [ "$1" == "" ]; then
+  usage
+  exit
+fi
+
+if [[ -f .env ]]; then
+  source .env
+fi
+
+if [[ -z $USER_NAME ]]; then
+  export USER_NAME=$(id -un)
+fi 
+
+export USER_ID=$(id -u)
+export REGISTRY_ADDRESS=`ip route get 1 | head -1 | sed 's/.*src //g' | cut -d ' ' -f1`
+
+IP=`ip route get 1 | head -1 | sed 's/.*src //g' | cut -d ' ' -f1`
+
+CWD=$(dirname "$0")
+
+if [[ ! -d $HOME/.dev-env ]]; then
+  mkdir -p $HOME/.dev-env/{IntelliJIdea,logs}
+fi
+
+command=$1
+
+case $command in 
+  stack)
+    shift
+    case $1 in
+      dev)
+        case $2 in 
+          up)
+            docker-compose -p bl -f $CWD/dev-env/docker-compose.yaml up -d;;
+          start)
+            docker-compose -p bl -f $CWD/dev-env/docker-compose.yaml start;;
+          stop)
+            docker-compose -p bl -f $CWD/dev-env/docker-compose.yaml stop;;
+          down)
+            docker-compose -p bl -f $CWD/dev-env/docker-compose.yaml down;;
+          *)
+            usage;;
+        esac
+        ;;
+      full)
+        case $2 in 
+          up)
+            docker-compose -p bl -f $CWD/dev-env/docker-compose-full.yaml up -d;;
+          start)
+            docker-compose -p bl -f $CWD/dev-env/docker-compose-full.yaml start;;
+          stop)
+            docker-compose -p bl -f $CWD/dev-env/docker-compose-full.yaml stop;;
+          down)
+            docker-compose -p bl -f $CWD/dev-env/docker-compose-full.yaml down;;
+          *)
+            usage;;
+        esac
+        ;;
+    esac
+    ;;
+  run)
+    shift
+    xhost +local:$(whoami) 1>$HOME/.dev-env/logs/dev-env.log 2>$HOME/.dev-env/logs/error.log
+
+    dev_process=`docker ps -f name=dev-env -q`
+
+    if [[ -z $dev_process ]]; then
+      echo 'The dev environment is not running, creating a new container'
+
+      docker run -d --rm \
+        -v /tmp/.X11-unix:/tmp/.X11-unix \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v /run/user/$(id -u):/run/user/$(id -u) \
+        -v $HOME/code:/home/${USER_NAME}/code \
+        -v $HOME/.ssh:/home/${USER_NAME}/.ssh \
+        -v $HOME/.netrc:/home/${USER_NAME}/.netrc \
+        -v $HOME/.gitconfig:/home/${USER_NAME}/.gitconfig \
+        -v $HOME/.dev-env/IntelliJIdea:/home/${USER_NAME}/.IntelliJIdea2019.3 \
+        -v $HOME/.java:/home/${USER_NAME}/.java \
+        -v $HOME/.fonts:/home/${USER_NAME}/.fonts \
+        -v $HOME/code-server/extensions:/code-server/extensions \
+        -v $HOME/code-server/user-data/User:/code-server/user-data/User \
+        -e DISPLAY=$DISPLAY \
+        -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
+        --ipc=host \
+        --security-opt=seccomp:unconfined \
+        birchwoodlangham/dockerised-development-environment:latest $@ 1>$HOME/.dev-env/logs/dev-env.log 2>$HOME/.dev-env/logs/error.log
+    else
+      docker exec -u $USER_NAME $dev_process $@ & 1>$HOME/.dev-env/logs/dev-env.log 2>$HOME/.dev-env/logs/error.log
+    fi
+    ;;
+  exec)
+    dev_process=`docker ps -f name=dev-env -q`
+
+    if [[ -z $dev_process ]]; then
+      echo 'Sorry, the dev environment is not running'
+      exit 1
+    fi
+
+    shift
+
+    docker exec -u $USER_NAME $dev_process $@
+    ;;
+  shell)
+    docker run -it --rm \
+      -v /tmp/.X11-unix:/tmp/.X11-unix \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v /run/user/$(id -u):/run/user/$(id -u) \
+      -v $HOME/code:/home/${USER_NAME}/code \
+      -v $HOME/.ssh:/home/${USER_NAME}/.ssh \
+      -v $HOME/.netrc:/home/${USER_NAME}/.netrc \
+      -v $HOME/.gitconfig:/home/${USER_NAME}/.gitconfig \
+      -v $HOME/.dev-env/IntelliJIdea:/home/${USER_NAME}/.IntelliJIdea2019.3 \
+      -v $HOME/.java:/home/${USER_NAME}/.java \
+      -v $HOME/.fonts:/home/${USER_NAME}/.fonts \
+      -v $HOME/code-server/extensions:/code-server/extensions \
+      -v $HOME/code-server/user-data/User:/code-server/user-data/User \
+      -e DISPLAY=$DISPLAY \
+      -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
+      --ipc=host \
+      --security-opt=seccomp:unconfined \
+      birchwoodlangham/dockerised-development-environment:latest zsh
+    ;;
+  code-server)
+    xhost +local:$(whoami) 1>$HOME/.dev-env/logs/dev-env.log 2>$HOME/.dev-env/logs/error.log
+
+    docker run -d --rm \
+      -v /tmp/.X11-unix:/tmp/.X11-unix \
+      -v /var/run/docker.sock:/var/run/docker.sock \
+      -v /run/user/$(id -u):/run/user/$(id -u) \
+      -v $HOME/code:/home/${USER_NAME}/code \
+      -v $HOME/.ssh:/home/${USER_NAME}/.ssh \
+      -v $HOME/.netrc:/home/${USER_NAME}/.netrc \
+      -v $HOME/.gitconfig:/home/${USER_NAME}/.gitconfig \
+      -v $HOME/.dev-env/IntelliJIdea:/home/${USER_NAME}/.IntelliJIdea2019.3 \
+      -v $HOME/.java:/home/${USER_NAME}/.java \
+      -v $HOME/.fonts:/home/${USER_NAME}/.fonts \
+      -v $HOME/code-server/extensions:/code-server/extensions \
+      -v $HOME/code-server/user-data/User:/code-server/user-data/User \
+      -p 8090:8080 \
+      -e DISPLAY=$DISPLAY \
+      -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
+      --ipc=host \
+      --security-opt=seccomp:unconfined \
+      --name=dev-env \
+      birchwoodlangham/dockerised-development-environment:latest
+
+    ;;
+  *)
+  usage
+  ;;
+esac
