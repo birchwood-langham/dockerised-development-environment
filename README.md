@@ -175,3 +175,4 @@ docker run -d --rm \
 2020-04-05: Updated the image to use Visual Studio Code server and added make file, launcher scripts etc.
 2019-09-19: Version bump on Go, Scala, SBT, IntelliJ, Protocol buffers etc.
 2019-09-20: Added Microsoft Cascadia Font to font collection
+2019-11-27: Version bump
