@@ -44,7 +44,7 @@ IP=`ip route get 1 | head -1 | sed 's/.*src //g' | cut -d ' ' -f1`
 
 CWD=$(dirname "$0")
 
-if [[ ! -d $HOME/.dev-env ]]; then
+if [[ ! -d $HOME/.dev-env/IntelliJIdea ]] || [[ ! -d $HOME/.dev-env/logs ]]; then
   mkdir -p $HOME/.dev-env/{IntelliJIdea,logs}
 fi
 
