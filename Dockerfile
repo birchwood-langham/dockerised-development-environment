@@ -13,12 +13,13 @@ ENV CT_VERSION=2.4.0 \
   IDEA_VERSION=2019.3.4 \
   TERM=xterm-256color \
   CODE_SERVER_VERSION=3.0.2 \
-  GOLANGCI_LINT_VERSION=1.24.0
+  GOLANGCI_LINT_VERSION=1.24.0 \
+  TERRAFORM_VERSION=0.12.24
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
   apt-get -y upgrade && \
   apt-get -y install apt-utils && \
-  apt-get -y install dialog git vim software-properties-common debconf-utils wget curl apt-transport-https bzip2 iputils-ping telnet net-tools iproute2
+  apt-get -y install dialog git vim software-properties-common debconf-utils wget curl apt-transport-https bzip2 iputils-ping telnet net-tools iproute2 acl
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing libxext-dev libxrender-dev libxslt1.1 \
   libxtst-dev libgtk2.0-0 libcanberra-gtk-module libxss1 libxkbfile1 \
@@ -26,7 +27,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing libxext-
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing sudo zsh fonts-powerline \
   openjdk-11-jdk go-dep build-essential locales apt-transport-https ca-certificates gnupg-agent \
-  software-properties-common httpie unzip gosu git-flow
+  software-properties-common httpie unzip gosu git-flow awscli
 
 RUN locale-gen en_US.UTF-8 && \
   fc-cache -f
@@ -53,7 +54,7 @@ RUN DEBIAN_FRONTEND=noninteractive && \
 # Install Docker 
 RUN curl https://get.docker.com | bash && \ 
   apt-get -y install docker-compose && \
-  usermod -aG docker ${user}
+  usermod -aG docker ${user} 
 
 # Install protoc
 RUN PROTOC_ZIP=protoc-${PROTOC_VERSION}-linux-x86_64.zip &&\
@@ -104,6 +105,11 @@ RUN wget https://dl.pstmn.io/download/latest/linux64 -O Postman-linux.tar.gz && 
   tar -C /opt -xf Postman-linux.tar.gz && \
   ln -s /opt/Postman/Postman /usr/local/bin/Postman && \
   rm Postman-linux.tar.gz
+
+# Install Terraform
+RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+  unzip -d /usr/local/bin terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
+  rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
 # Clean up apt
 RUN apt-get autoremove -y -qq && \
@@ -207,10 +213,10 @@ RUN go get -u -v github.com/ramya-rao-a/go-outline  && \
 
 # Use this one to install the plugins etc.
 COPY fonts /home/${user}/.local/share/.fonts
-
 COPY zshrc /home/${user}/.zshrc
 COPY p10k.zsh /home/${user}/.p10k.zsh
 COPY Xdefaults /home/${user}/.Xdefaults
+COPY alias.zsh /home/${user}/.oh-my-zsh/custom
 
 RUN sudo chown -R ${user}:${user} . && \
   fc-cache -f && \

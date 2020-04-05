@@ -108,7 +108,12 @@ zplug "plugins/ubuntu", from:oh-my-zsh
 zplug "plugins/virtualenv", from:oh-my-zsh
 zplug "plugins/golang", from:oh-my-zsh
 zplug "plugins/virtualenvwrapper", from:oh-my-zsh
-zplug "plugins/z", from:oh-my-zsh
+zplug "plugins/terraform", from:oh-my-zsh
+zplug "plugins/docker", from:oh-my-zsh
+zplug "plugins/kubectl", from:oh-my-zsh
+zplug "plugins/rust", from:oh-my-zsh
+zplug "plugins/cargo", from:oh-my-zsh
+zplug "plugins/aws", from:oh-my-zsh
 
 zplug romkatv/powerlevel10k, as:theme, depth:1
 

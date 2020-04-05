@@ -105,10 +105,10 @@ services:
       - dev-net
     environment:
       DBUS_SESSION_BUS_ADDRESS: unix:path=/var/run/user/1000/bus
-      DISPLAY:
+      DISPLAY: ${DISPLAY}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ipc: host
-    #    command: ["zsh"]
-    #    tty: true
     ports:
       - 8090:8080
     security_opt:
