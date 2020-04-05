@@ -36,10 +36,6 @@ if [ "$1" == "" ]; then
   exit
 fi
 
-if [[ -f .env ]]; then
-  source .env
-fi
-
 if [[ -z $USER_NAME ]]; then
   export USER_NAME=$(id -un)
 fi 
@@ -60,6 +56,10 @@ fi
 
 if [[ ! -d $HOME/.config/dev-env/IntelliJIdea ]] || [[ ! -d $HOME/.config/dev-env/logs ]]; then
   mkdir -p $HOME/.config/dev-env/{IntelliJIdea,logs}
+fi
+
+if [[ -f $HOME/.config/dev-env/.env ]]; then 
+  source $HOME/.config/dev-env/.env
 fi
 
 command=$1
@@ -122,6 +122,8 @@ case $command in
         -v $HOME/code-server/user-data/User:/code-server/user-data/User \
         -e DISPLAY=$DISPLAY \
         -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
+        -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+        -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
         --ipc=host \
         --security-opt=seccomp:unconfined \
         --network dev-net \
@@ -158,6 +160,8 @@ case $command in
       -v $HOME/code-server/user-data/User:/code-server/user-data/User \
       -e DISPLAY=$DISPLAY \
       -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
+      -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+      -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
       --ipc=host \
       --security-opt=seccomp:unconfined \
       --network dev-net \
@@ -185,6 +189,8 @@ case $command in
           -p 8090:8080 \
           -e DISPLAY=$DISPLAY \
           -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
+          -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+          -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
           --ipc=host \
           --security-opt=seccomp:unconfined \
           --name=dev-env \
