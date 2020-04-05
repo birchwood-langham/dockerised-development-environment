@@ -7,18 +7,26 @@ services:
   etcd:
     image: bitnami/etcd:latest
     hostname: etcd
+    networks:
+      - dev-net
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
     restart: on-failure
+  # Deprecated by Micro framework in favour of etcd, but we keep it for now
+  # until everything has been migrated properly
   consul:
     image: consul
     hostname: consul
     container_name: consul
+    networks:
+      - dev-net
     restart: on-failure
   redis:
     image: redis:latest
     container_name: redis
+    networks:
+      - dev-net
     ports:
       - "6379:6379"
     restart: on-failure
@@ -26,9 +34,11 @@ services:
   micro-api:
     image: microhq/micro:latest
     hostname: micro-api
+    networks:
+      - dev-net
     container_name: micro-api
     env_file:
-      - ./envfiles/micro.env
+      - $HOME/.config/dev-env/envfiles/micro.env
     command: ["api"]
     ports:
       - 8080:8080
@@ -38,8 +48,10 @@ services:
     image: microhq/micro:latest
     hostname: micro-web
     container_name: micro-web
+    networks:
+      - dev-net
     env_file:
-      - ./envfiles/micro.env
+      - $HOME/.config/dev-env/envfiles/micro.env
     ports:
       - 8082:8082
     command: ["web"]
@@ -48,8 +60,10 @@ services:
     restart: on-failure
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    networks:
+      - dev-net
     env_file:
-      - ./envfiles/zookeeper.env
+      - $HOME/.config/dev-env/envfiles/zookeeper.env
     environment:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
@@ -58,10 +72,12 @@ services:
     restart: on-failure
   kafka:
     image: confluentinc/cp-kafka:latest
+    networks:
+      - dev-net
     depends_on:
       - zookeeper
     env_file:
-      - ./envfiles/kafka.env
+      - $HOME/.config/dev-env/envfiles/kafka.env
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
@@ -71,6 +87,8 @@ services:
   postgres:
     image: postgres:latest
     container_name: postgres
+    networks:
+      - dev-net
     volumes:
       - postgres-db:/var/lib/postgresql/data
     environment:
@@ -83,6 +101,8 @@ services:
   dev-env:
     image: birchwoodlangham/dockerised-development-environment:latest
     container_name: dev-env
+    networks:
+      - dev-net
     environment:
       DBUS_SESSION_BUS_ADDRESS: unix:path=/var/run/user/1000/bus
       DISPLAY:
@@ -116,7 +136,7 @@ services:
         source: $HOME/.gitconfig
         target: /home/${USER_NAME}/.gitconfig
       - type: bind
-        source: $HOME/.dev-env/IntelliJIdea
+        source: $HOME/.config/dev-env/IntelliJIdea
         target: /home/${USER_NAME}/.IntelliJIdea2019.3
       - type: bind
         source: $HOME/.java

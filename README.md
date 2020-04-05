@@ -7,7 +7,7 @@ Based on the official Ubuntu 18.04, this image installs
 - [Rust](https://www.rust-lang.org/)
 - [Docker](https://www.docker.com/)
 - [Code Server](https://github.com/cdr/code-server)
-- [Jetbrains IntelliJ](https://www.jetbrains.com/idea/) 
+- [Jetbrains IntelliJ](https://www.jetbrains.com/idea/)
 - [Postman Rest Client](https://www.postman.com/)
 
 along with a few other useful development tools
