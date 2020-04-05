@@ -9,6 +9,8 @@ Based on the official Ubuntu 18.04, this image installs
 - [Code Server](https://github.com/cdr/code-server)
 - [Jetbrains IntelliJ](https://www.jetbrains.com/idea/)
 - [Postman Rest Client](https://www.postman.com/)
+- [AWS Command Line Interface](https://aws.amazon.com/cli/)
+- [Terraform](https://www.terraform.io/)
 
 along with a few other useful development tools
 
@@ -168,10 +170,20 @@ docker run -d --rm \
   birchwoodlangham/dockerised-development-environment:latest idea.sh
 ```
 
+### AWS Command Line Interface
+
+To pass your AWS credentials, you can edit pass them in as environment variables that are recognised by the AWS CLI. These are:
+
+- AWS_ACCESS_KEY_ID
+- AWS_SECRET_ACCESS_KEY
+
+Alternatively, if you can mount the .aws folder from your host machine to the docker container.
+
 ## Change Log
 
 ============
 
+2020-04-05: Hotfix: could not use docker without using sudo. Additionally installed aws cli and terraform
 2020-04-05: Updated the image to use Visual Studio Code server and added make file, launcher scripts etc.
 2019-09-19: Version bump on Go, Scala, SBT, IntelliJ, Protocol buffers etc.
 2019-09-20: Added Microsoft Cascadia Font to font collection
