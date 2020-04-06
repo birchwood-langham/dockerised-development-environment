@@ -14,19 +14,21 @@ ENV CT_VERSION=2.4.0 \
   TERM=xterm-256color \
   CODE_SERVER_VERSION=3.0.2 \
   GOLANGCI_LINT_VERSION=1.24.0 \
-  TERRAFORM_VERSION=0.12.24
+  TERRAFORM_VERSION=0.12.24 \
+  DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
   apt-get -y upgrade && \
   apt-get -y install apt-utils && \
-  apt-get -y install dialog git vim software-properties-common debconf-utils wget curl apt-transport-https bzip2 iputils-ping telnet net-tools iproute2 acl
+  apt-get -y install dialog git vim software-properties-common debconf-utils wget curl apt-transport-https \
+  bzip2 iputils-ping telnet net-tools iproute2 acl
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing libxext-dev libxrender-dev libxslt1.1 \
   libxtst-dev libgtk2.0-0 libcanberra-gtk-module libxss1 libxkbfile1 \
   gconf2 gconf-service libnotify4 libnss3 gvfs-bin xdg-utils 
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing sudo zsh fonts-powerline \
-  openjdk-11-jdk go-dep build-essential locales apt-transport-https ca-certificates gnupg-agent \
+  openjdk-11-jdk go-dep build-essential locales ca-certificates gnupg-agent \
   software-properties-common httpie unzip gosu git-flow awscli
 
 RUN locale-gen en_US.UTF-8 && \
@@ -76,14 +78,14 @@ RUN wget https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
   rm -f helm-v${HELM_VERSION}-linux-amd64.tar.gz &&\
   rm -fr linux-amd64
 
-# Install Nodejs and Yarn
+# Install Nodejs, Typescript and Yarn
 RUN DEBIAN_FRONTEND=noninteractive && \
-  curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
+  curl -sL https://deb.nodesource.com/setup_13.x | bash - && \
   curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
   echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
   apt-get update && \
-  apt-get install -y nodejs && \
-  apt-get install yarn
+  apt-get install -y nodejs yarn && \
+  npm install -g typescript
 
 # Install Helm chart testing
 RUN mkdir /ct && cd /ct && \ 
@@ -95,10 +97,10 @@ RUN mkdir /ct && cd /ct && \
 
 # Install IntelliJ idea
 RUN mkdir -p /opt/idea && \
-  wget https://download.jetbrains.com/idea/ideaIU-${IDEA_VERSION}-no-jbr.tar.gz && \
-  tar -C /opt/idea -zxf ideaIU-${IDEA_VERSION}-no-jbr.tar.gz --strip-components=1 && \
-  rm ideaIU-${IDEA_VERSION}-no-jbr.tar.gz && \
-  ln -s /opt/idea/bin/idea.sh /usr/local/bin/idea.sh
+  wget https://download.jetbrains.com/idea/ideaIU-${IDEA_VERSION}.tar.gz && \
+  tar -C /opt/idea -zxf ideaIU-${IDEA_VERSION}.tar.gz --strip-components=1 && \
+  rm ideaIU-${IDEA_VERSION}.tar.gz && \
+  ln -s /opt/idea/bin/idea.sh /usr/local/bin/idea
 
 # Install Postman
 RUN wget https://dl.pstmn.io/download/latest/linux64 -O Postman-linux.tar.gz && \
@@ -110,6 +112,14 @@ RUN wget https://dl.pstmn.io/download/latest/linux64 -O Postman-linux.tar.gz && 
 RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
   unzip -d /usr/local/bin terraform_${TERRAFORM_VERSION}_linux_amd64.zip && \
   rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+# Install .Net Core
+RUN wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+  dpkg -i packages-microsoft-prod.deb && \
+  rm -f packages-microsoft-prod.deb && \
+  add-apt-repository universe && \
+  apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get -y install dotnet-sdk-3.1
 
 # Clean up apt
 RUN apt-get autoremove -y -qq && \
@@ -217,6 +227,13 @@ COPY zshrc /home/${user}/.zshrc
 COPY p10k.zsh /home/${user}/.p10k.zsh
 COPY Xdefaults /home/${user}/.Xdefaults
 COPY alias.zsh /home/${user}/.oh-my-zsh/custom
+COPY vimrc /home/${user}/.vimrc
+COPY vimrc.local /home/${user}/.vimrc.local
+COPY vimrc.local.bundles /home/${user}/.vimrc.local.bundles
+
+RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim && \
+  vim +PlugInstall +qall
 
 RUN sudo chown -R ${user}:${user} . && \
   fc-cache -f && \

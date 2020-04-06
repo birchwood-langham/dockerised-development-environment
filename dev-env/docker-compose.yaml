@@ -3,6 +3,11 @@ version: "3.7"
 volumes:
   postgres-db:
 
+networks:
+  dev-net:
+    external: true
+    name: dev-net
+
 services:
   etcd:
     image: bitnami/etcd:latest
