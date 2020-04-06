@@ -5,6 +5,9 @@ Based on the official Ubuntu 18.04, this image installs
 - [Go](https://golang.org)
 - [OpenJDK 11](https://openjdk.java.net/)
 - [Rust](https://www.rust-lang.org/)
+- [Node.js](https://nodejs.org/en/)
+- [Typescript](https://www.typescriptlang.org/)
+- [.Net Core](https://dotnet.microsoft.com/)
 - [Docker](https://www.docker.com/)
 - [Code Server](https://github.com/cdr/code-server)
 - [Jetbrains IntelliJ](https://www.jetbrains.com/idea/)
@@ -183,6 +186,7 @@ Alternatively, if you can mount the .aws folder from your host machine to the do
 
 ============
 
+2020-04-05: Added vimrc configurations, updated Nodejs to current version and installed Typescript
 2020-04-05: Hotfix: could not use docker without using sudo. Additionally installed aws cli and terraform
 2020-04-05: Updated the image to use Visual Studio Code server and added make file, launcher scripts etc.
 2019-09-19: Version bump on Go, Scala, SBT, IntelliJ, Protocol buffers etc.
