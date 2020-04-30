@@ -3,6 +3,11 @@
 "*****************************************************************************
 "" Vim-PLug core
 "*****************************************************************************
+
+" Force vim to load python3
+if has('python3')
+endif
+
 let vimplug_exists=expand('~/.vim/autoload/plug.vim')
 
 let g:vim_bootstrap_langs = "go,javascript,python,rust,scala,typescript"
