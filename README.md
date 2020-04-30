@@ -186,6 +186,7 @@ Alternatively, if you can mount the .aws folder from your host machine to the do
 
 ============
 
+2020-04-30: Version bump for Go, IntelliJ etc.
 2020-04-06: Added vimrc configurations, updated Nodejs to current version, installed Typescript and .Net Core, replaced IntelliJ with the version including the JBR
 2020-04-05: Hotfix: could not use docker without using sudo. Additionally installed aws cli and terraform
 2020-04-05: Updated the image to use Visual Studio Code server and added make file, launcher scripts etc.
