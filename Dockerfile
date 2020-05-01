@@ -245,4 +245,4 @@ VOLUME [ "/code-server/extensions", "/code-server/user-data/User" ]
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
-CMD [ "/code-server/code-server", "--auth", "none", "--disable-ssh", "--user-data-dir", "/code-server/user-data", "--host", "0.0.0.0", "--extensions-dir", "/code-server/extensions" ]
+CMD [ "/code-server/code-server", "--auth", "none", "--user-data-dir", "/code-server/user-data", "--host", "0.0.0.0", "--extensions-dir", "/code-server/extensions" ]
