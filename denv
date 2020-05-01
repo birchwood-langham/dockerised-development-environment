@@ -6,6 +6,7 @@ usage() {
   echo "           stack - start a development stack"
   echo "                   options are:"
   echo "                       dev - a development stack with 1 kafka broker, 1 zookeeper etc."
+  echo "                       headless - dev stack without DISPLAY exposed to run on a headless server"
   echo "                       full - a full stack with 3 kafka brokers, 3 zookeeper etc."
   echo "                   suboptions are:"
   echo "                       up    - crate and start the stack"
@@ -36,12 +37,22 @@ if [ "$1" == "" ]; then
   exit
 fi
 
+CWD=$(pwd)
+
 if [[ -z $USER_NAME ]]; then
   export USER_NAME=$(id -un)
 fi 
 
 export USER_ID=$(id -u)
 export REGISTRY_ADDRESS=`ip route get 1 | head -1 | sed 's/.*src //g' | cut -d ' ' -f1`
+
+config_folder=".config/dev-env"
+code_server_extensions_folder="code-server/extensions"
+code_server_userdata_folder="code-server/user-data/User"
+
+if [[ -z $IDEA_VERSION ]]; then 
+  IDEA_VERSION="2020.1"
+fi
 
 # make sure the docker network exists, and create it if not
 # this is to ensure that any containers we create using this script
@@ -54,15 +65,25 @@ if [[ -z $devnet_id ]]; then
   docker network create dev-net
 fi
 
-if [[ ! -d $HOME/.config/dev-env/IntelliJIdea ]] || [[ ! -d $HOME/.config/dev-env/logs ]]; then
-  mkdir -p $HOME/.config/dev-env/{IntelliJIdea,logs}
+if [[ ! -d ${HOME}/${config_folder}/IntelliJIdea ]] || [[ ! -d ${HOME}/${config_folder}/logs ]]; then
+  mkdir -p ${HOME}/${config_folder}/{IntelliJIdea,logs}
 fi
 
-if [[ -f $HOME/.config/dev-env/.env ]]; then 
-  source $HOME/.config/dev-env/.env
+if [[ ! -d ${HOME}/${code_server_extensions_folder} ]]; then
+  mkdir -p ${HOME}/${code_server_extensions_folder}
 fi
+
+if [[ ! -d ${HOME}/${code_server_userdata_folder} ]]; then
+  mkdir -p ${HOME}/${code_server_userdata_folder}
+fi
+
+#if [[ -f ${HOME}/${config_folder}/.env ]]; then 
+#  source ${HOME}/${config_folder}/.env
+#fi
 
 command=$1
+
+cd ${HOME}/${config_folder}
 
 case $command in 
   stack)
@@ -71,13 +92,27 @@ case $command in
       dev)
         case $2 in 
           up)
-            docker-compose -p bl -f $HOME/.config/dev-env/docker-compose.yaml up -d;;
+            docker-compose -p bl -f ${HOME}/${config_folder}/docker-compose.yaml up -d;;
           start)
-            docker-compose -p bl -f $HOME/.config/dev-env/docker-compose.yaml start;;
+            docker-compose -p bl -f ${HOME}/${config_folder}/docker-compose.yaml start;;
           stop)
-            docker-compose -p bl -f $HOME/.config/dev-env/docker-compose.yaml stop;;
+            docker-compose -p bl -f ${HOME}/${config_folder}/docker-compose.yaml stop;;
           down)
-            docker-compose -p bl -f $HOME/.config/dev-env/docker-compose.yaml down;;
+            docker-compose -p bl -f ${HOME}/${config_folder}/docker-compose.yaml down;;
+          *)
+            usage;;
+        esac
+        ;;
+      headless)
+        case $2 in 
+          up)
+            docker-compose -p hl -f ${HOME}/${config_folder}/docker-compose-headless.yaml up -d;;
+          start)
+            docker-compose -p hl -f ${HOME}/${config_folder}/docker-compose-headless.yaml start;;
+          stop)
+            docker-compose -p hl -f ${HOME}/${config_folder}/docker-compose-headless.yaml stop;;
+          down)
+            docker-compose -p hl -f ${HOME}/${config_folder}/docker-compose-headless.yaml down;;
           *)
             usage;;
         esac
@@ -85,13 +120,13 @@ case $command in
       full)
         case $2 in 
           up)
-            docker-compose -p bl -f $HOME/.config/dev-env/docker-compose-full.yaml up -d;;
+            docker-compose -p bl -f ${HOME}/${config_folder}/docker-compose-full.yaml up -d;;
           start)
-            docker-compose -p bl -f $HOME/.config/dev-env/docker-compose-full.yaml start;;
+            docker-compose -p bl -f ${HOME}/${config_folder}/docker-compose-full.yaml start;;
           stop)
-            docker-compose -p bl -f $HOME/.config/dev-env/docker-compose-full.yaml stop;;
+            docker-compose -p bl -f ${HOME}/${config_folder}/docker-compose-full.yaml stop;;
           down)
-            docker-compose -p bl -f $HOME/.config/dev-env/docker-compose-full.yaml down;;
+            docker-compose -p bl -f ${HOME}/${config_folder}/docker-compose-full.yaml down;;
           *)
             usage;;
         esac
@@ -100,7 +135,7 @@ case $command in
     ;;
   run)
     shift
-    xhost +local:$(whoami) 1>$HOME/.config/dev-env/logs/dev-env.log 2>$HOME/.config/dev-env/logs/error.log
+    xhost +local:$(whoami) 1>${HOME}/${config_folder}/logs/dev-env.log 2>${HOME}/${config_folder}/logs/error.log
 
     dev_process=`docker ps -f name=dev-env -q`
 
@@ -111,15 +146,15 @@ case $command in
         -v /tmp/.X11-unix:/tmp/.X11-unix \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v /run/user/$(id -u):/run/user/$(id -u) \
-        -v $HOME/code:/home/${USER_NAME}/code \
-        -v $HOME/.ssh:/home/${USER_NAME}/.ssh \
-        -v $HOME/.netrc:/home/${USER_NAME}/.netrc \
-        -v $HOME/.gitconfig:/home/${USER_NAME}/.gitconfig \
-        -v $HOME/.config/dev-env/IntelliJIdea:/home/${USER_NAME}/.IntelliJIdea2019.3 \
-        -v $HOME/.java:/home/${USER_NAME}/.java \
-        -v $HOME/.fonts:/home/${USER_NAME}/.fonts \
-        -v $HOME/code-server/extensions:/code-server/extensions \
-        -v $HOME/code-server/user-data/User:/code-server/user-data/User \
+        -v ${HOME}/code:/home/${USER_NAME}/code \
+        -v ${HOME}/.ssh:/home/${USER_NAME}/.ssh \
+        -v ${HOME}/.netrc:/home/${USER_NAME}/.netrc \
+        -v ${HOME}/.gitconfig:/home/${USER_NAME}/.gitconfig \
+        -v ${HOME}/${config_folder}/IntelliJIdea:/home/${USER_NAME}/.IntelliJIdea${IDEA_VERSION} \
+        -v ${HOME}/.java:/home/${USER_NAME}/.java \
+        -v ${HOME}/.fonts:/home/${USER_NAME}/.fonts \
+        -v ${HOME}/${code_server_extensions_folder}:/${code_server_extensions_folder} \
+        -v ${HOME}/${code_server_userdata_folder}:/${code_server_userdata_folder} \
         -e DISPLAY=$DISPLAY \
         -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
         -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
@@ -127,9 +162,9 @@ case $command in
         --ipc=host \
         --security-opt=seccomp:unconfined \
         --network dev-net \
-        birchwoodlangham/dockerised-development-environment:latest $@ 1>$HOME/.config/dev-env/logs/dev-env.log 2>$HOME/.config/dev-env/logs/error.log
+        birchwoodlangham/dockerised-development-environment:latest $@ 1>${HOME}/${config_folder}/logs/dev-env.log 2>${HOME}/${config_folder}/logs/error.log
     else
-      docker exec -u $USER_NAME $dev_process $@ & 1>$HOME/.config/dev-env/logs/dev-env.log 2>$HOME/.config/dev-env/logs/error.log
+      docker exec -u $USER_NAME $dev_process $@ & 1>${HOME}/${config_folder}/logs/dev-env.log 2>${HOME}/${config_folder}/logs/error.log
     fi
     ;;
   exec)
@@ -149,15 +184,15 @@ case $command in
       -v /tmp/.X11-unix:/tmp/.X11-unix \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -v /run/user/$(id -u):/run/user/$(id -u) \
-      -v $HOME/code:/home/${USER_NAME}/code \
-      -v $HOME/.ssh:/home/${USER_NAME}/.ssh \
-      -v $HOME/.netrc:/home/${USER_NAME}/.netrc \
-      -v $HOME/.gitconfig:/home/${USER_NAME}/.gitconfig \
-      -v $HOME/.config/dev-env/IntelliJIdea:/home/${USER_NAME}/.IntelliJIdea2019.3 \
-      -v $HOME/.java:/home/${USER_NAME}/.java \
-      -v $HOME/.fonts:/home/${USER_NAME}/.fonts \
-      -v $HOME/code-server/extensions:/code-server/extensions \
-      -v $HOME/code-server/user-data/User:/code-server/user-data/User \
+      -v ${HOME}/code:/home/${USER_NAME}/code \
+      -v ${HOME}/.ssh:/home/${USER_NAME}/.ssh \
+      -v ${HOME}/.netrc:/home/${USER_NAME}/.netrc \
+      -v ${HOME}/.gitconfig:/home/${USER_NAME}/.gitconfig \
+      -v ${HOME}/${config_folder}/IntelliJIdea:/home/${USER_NAME}/.IntelliJIdea${IDEA_VERSION} \
+      -v ${HOME}/.java:/home/${USER_NAME}/.java \
+      -v ${HOME}/.fonts:/home/${USER_NAME}/.fonts \
+      -v ${HOME}/${code_server_extensions_folder}:/${code_server_extensions_folder} \
+      -v ${HOME}/${code_server_userdata_folder}:/${code_server_userdata_folder} \
       -e DISPLAY=$DISPLAY \
       -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
       -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
@@ -171,21 +206,21 @@ case $command in
     shift
     case $1 in
       start)
-        xhost +local:$(whoami) 1>$HOME/.config/dev-env/logs/dev-env.log 2>$HOME/.config/dev-env/logs/error.log
+        xhost +local:$(whoami) 1>${HOME}/${config_folder}/logs/dev-env.log 2>${HOME}/${config_folder}/logs/error.log
 
         docker run -d --rm \
           -v /tmp/.X11-unix:/tmp/.X11-unix \
           -v /var/run/docker.sock:/var/run/docker.sock \
           -v /run/user/$(id -u):/run/user/$(id -u) \
-          -v $HOME/code:/home/${USER_NAME}/code \
-          -v $HOME/.ssh:/home/${USER_NAME}/.ssh \
-          -v $HOME/.netrc:/home/${USER_NAME}/.netrc \
-          -v $HOME/.gitconfig:/home/${USER_NAME}/.gitconfig \
-          -v $HOME/.config/dev-env/IntelliJIdea:/home/${USER_NAME}/.IntelliJIdea2019.3 \
-          -v $HOME/.java:/home/${USER_NAME}/.java \
-          -v $HOME/.fonts:/home/${USER_NAME}/.fonts \
-          -v $HOME/code-server/extensions:/code-server/extensions \
-          -v $HOME/code-server/user-data/User:/code-server/user-data/User \
+          -v ${HOME}/code:/home/${USER_NAME}/code \
+          -v ${HOME}/.ssh:/home/${USER_NAME}/.ssh \
+          -v ${HOME}/.netrc:/home/${USER_NAME}/.netrc \
+          -v ${HOME}/.gitconfig:/home/${USER_NAME}/.gitconfig \
+          -v ${HOME}/${config_folder}/IntelliJIdea:/home/${USER_NAME}/.IntelliJIdea2020.1 \
+          -v ${HOME}/.java:/home/${USER_NAME}/.java \
+          -v ${HOME}/.fonts:/home/${USER_NAME}/.fonts \
+          -v ${HOME}/${code_server_extensions_folder}:/${code_server_extensions_folder} \
+          -v ${HOME}/${code_server_userdata_folder}:/${code_server_userdata_folder} \
           -p 8090:8080 \
           -e DISPLAY=$DISPLAY \
           -e DBUS_SESSION_BUS_ADDRESS="unix:path=/var/run/user/1000/bus" \
@@ -209,3 +244,5 @@ case $command in
     usage
     ;;
 esac
+
+cd ${CWD}

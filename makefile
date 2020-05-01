@@ -6,6 +6,9 @@ build:
 
 install:
 	mkdir -p ~/.config/dev-env/envfiles
+	mkdir -p ~/.local/bin
+	mkdir -p ~/code-server/extensions
+	mkdir -p ~/code-server/user-data/User
 	cp dev-env/* ~/.config/dev-env
 	cp -R envfiles/* ~/.config/dev-env/envfiles
 	cp denv ~/.local/bin
