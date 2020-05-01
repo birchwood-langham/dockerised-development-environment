@@ -110,7 +110,6 @@ services:
       - dev-net
     environment:
       DBUS_SESSION_BUS_ADDRESS: unix:path=/var/run/user/1000/bus
-      DISPLAY: ${DISPLAY}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ipc: host
@@ -119,9 +118,6 @@ services:
     security_opt:
       - seccomp:unconfined
     volumes:
-      - type: bind
-        source: /tmp/.X11-unix
-        target: /tmp/.X11-unix
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
@@ -142,7 +138,7 @@ services:
         target: /home/${USER_NAME}/.gitconfig
       - type: bind
         source: $HOME/.config/dev-env/IntelliJIdea
-        target: /home/${USER_NAME}/.IntelliJIdea2020.1
+        target: /home/${USER_NAME}/.IntelliJIdea${IDEA_VERSION}
       - type: bind
         source: $HOME/.java
         target: /home/${USER_NAME}/.java
