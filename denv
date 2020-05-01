@@ -37,6 +37,8 @@ if [ "$1" == "" ]; then
   exit
 fi
 
+CWD=$(pwd)
+
 if [[ -z $USER_NAME ]]; then
   export USER_NAME=$(id -un)
 fi 
@@ -48,7 +50,9 @@ config_folder=".config/dev-env"
 code_server_extensions_folder="code-server/extensions"
 code_server_userdata_folder="code-server/user-data/User"
 
-[[ -z $IDEA_VERSION ]] && [[ IDEA_VERSION = "2020.1"]]
+if [[ -z $IDEA_VERSION ]]; then 
+  IDEA_VERSION="2020.1"
+fi
 
 # make sure the docker network exists, and create it if not
 # this is to ensure that any containers we create using this script
@@ -73,11 +77,13 @@ if [[ ! -d ${HOME}/${code_server_userdata_folder} ]]; then
   mkdir -p ${HOME}/${code_server_userdata_folder}
 fi
 
-if [[ -f ${HOME}/${config_folder}/.env ]]; then 
-  source ${HOME}/${config_folder}/.env
-fi
+#if [[ -f ${HOME}/${config_folder}/.env ]]; then 
+#  source ${HOME}/${config_folder}/.env
+#fi
 
 command=$1
+
+cd ${HOME}/${config_folder}
 
 case $command in 
   stack)
@@ -238,3 +244,5 @@ case $command in
     usage
     ;;
 esac
+
+cd ${CWD}
