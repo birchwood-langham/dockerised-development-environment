@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 LABEL maintainer="tan.quach@birchwoodlangham.com"
 
@@ -17,10 +17,10 @@ ENV CT_VERSION=2.4.1 \
   TERRAFORM_VERSION=0.12.24 \
   DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+RUN apt-get update && \
   apt-get -y upgrade && \
   apt-get -y install apt-utils && \
-  apt-get -y install dialog git vim software-properties-common debconf-utils wget curl apt-transport-https \
+  TZ=UTC DEBIAN_FRONTEND=noninteractive apt-get -y install dialog git vim software-properties-common debconf-utils wget curl apt-transport-https \
   bzip2 iputils-ping telnet net-tools iproute2 acl
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing libxext-dev libxrender-dev libxslt1.1 \
@@ -47,15 +47,14 @@ RUN wget https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz && \
   ln -s /usr/local/go /usr/lib/go
 
 # Install SBT and Scala
-RUN DEBIAN_FRONTEND=noninteractive && \
-  echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list && \
-  curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | sudo apt-key add && \
-  sudo apt-get update && \
-  sudo apt-get install sbt
+RUN  echo "deb https://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list && \
+  curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | apt-key add && \
+  apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install sbt
 
 # Install Docker 
-RUN curl https://get.docker.com | bash && \ 
-  apt-get -y install docker-compose && \
+# RUN curl https://get.docker.com | bash && \ 
+RUN apt-get -y install docker-compose && \
   usermod -aG docker ${user} 
 
 # Install protoc
@@ -65,11 +64,10 @@ RUN PROTOC_ZIP=protoc-${PROTOC_VERSION}-linux-x86_64.zip &&\
   rm -f $PROTOC_ZIP
 
 # Install Kubernetes
-RUN DEBIAN_FRONTEND=noninteractive && \
-  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
   echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" >/etc/apt/sources.list.d/kubernetes.list && \
   apt-get update && \
-  apt-get install -y kubectl
+  DEBIAN_FRONTEND=noninteractive apt-get install -y kubectl
 
 # Install Helm
 RUN wget https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
@@ -79,12 +77,11 @@ RUN wget https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
   rm -fr linux-amd64
 
 # Install Nodejs, Typescript and Yarn
-RUN DEBIAN_FRONTEND=noninteractive && \
-  curl -sL https://deb.nodesource.com/setup_13.x | bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - && \
   curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
   echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
   apt-get update && \
-  apt-get install -y nodejs yarn && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs yarn && \
   npm install -g typescript
 
 # Install Helm chart testing
@@ -114,12 +111,13 @@ RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform
   rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
 # Install .Net Core
-RUN wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
-  dpkg -i packages-microsoft-prod.deb && \
-  rm -f packages-microsoft-prod.deb && \
-  add-apt-repository universe && \
-  apt-get update && \
-  DEBIAN_FRONTEND=noninteractive apt-get -y install dotnet-sdk-3.1
+# Temporarily disable for now because Microsoft dropped the ball on this one, how unusual?
+# RUN wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+#   dpkg -i packages-microsoft-prod.deb && \
+#   rm -f packages-microsoft-prod.deb && \
+#   add-apt-repository universe && \
+#   apt-get update && \
+#   DEBIAN_FRONTEND=noninteractive apt-get -y install dotnet-sdk-3.1
 
 # Clean up apt
 RUN apt-get autoremove -y -qq && \
