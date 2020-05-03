@@ -46,7 +46,7 @@ services:
       - $HOME/.config/dev-env/envfiles/micro.env
     command: ["api"]
     ports:
-      - 8080:8080
+      - 8090:8080
     restart: on-failure
   # Micro Web service for monitoring Go-Micro based services
   micro-web:
@@ -58,7 +58,7 @@ services:
     env_file:
       - $HOME/.config/dev-env/envfiles/micro.env
     ports:
-      - 8082:8082
+      - 8092:8082
     command: ["web"]
     depends_on:
       - micro-api
@@ -114,7 +114,7 @@ services:
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
     ipc: host
     ports:
-      - 8090:8080
+      - 8080:8080
     security_opt:
       - seccomp:unconfined
     volumes:
@@ -122,8 +122,8 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
       - type: bind
-        source: /run/user/${USER_ID}
-        target: /run/user/${USER_ID}
+        source: ${XDG_RUNTIME_DIR}
+        target: ${XDG_RUNTIME_DIR}
       - type: bind
         source: $HOME/code
         target: /home/${USER_NAME}/code
@@ -146,8 +146,8 @@ services:
         source: $HOME/.fonts
         target: /home/${USER_NAME}/.fonts
       - type: bind
-        source: $HOME/code-server/extensions
+        source: ${DEV_ENV_EXTENSIONS_FOLDER}
         target: /code-server/extensions
       - type: bind
-        source: $HOME/code-server/user-data/User
+        source: ${DEV_ENV_USER_FOLDER}
         target: /code-server/user-data/User
