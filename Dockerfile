@@ -221,13 +221,13 @@ RUN go get -u -v github.com/ramya-rao-a/go-outline  && \
 
 # Use this one to install the plugins etc.
 COPY fonts /home/${user}/.local/share/.fonts
-COPY zshrc /home/${user}/.zshrc
-COPY p10k.zsh /home/${user}/.p10k.zsh
-COPY Xdefaults /home/${user}/.Xdefaults
-COPY alias.zsh /home/${user}/.oh-my-zsh/custom
-COPY vimrc /home/${user}/.vimrc
-COPY vimrc.local /home/${user}/.vimrc.local
-COPY vimrc.local.bundles /home/${user}/.vimrc.local.bundles
+COPY dotfiles/zshrc /home/${user}/.zshrc
+COPY dotfiles/p10k.zsh /home/${user}/.p10k.zsh
+COPY dotfiles/Xdefaults /home/${user}/.Xdefaults
+COPY dotfiles/alias.zsh /home/${user}/.oh-my-zsh/custom
+COPY vim/vimrc /home/${user}/.vimrc
+COPY vim/vimrc.local /home/${user}/.vimrc.local
+COPY vim/vimrc.local.bundles /home/${user}/.vimrc.local.bundles
 
 RUN curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim && \
