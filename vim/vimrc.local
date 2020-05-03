@@ -71,3 +71,5 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 let g:go_def_mapping_enabled = 0
 
 map <C-t> :NERDTreeToggle<CR>
+
+autocmd FileType json syntax match Comment +\/\/.\+$+
