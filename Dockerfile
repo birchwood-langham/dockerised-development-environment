@@ -9,10 +9,10 @@ ENV CT_VERSION=2.4.1 \
   GO_VERSION=1.14.3 \
   SBT_VERSION=1.3.10 \
   PROTOC_VERSION=3.11.4 \
-  HELM_VERSION=3.3.1 \
+  HELM_VERSION=3.2.0 \
   IDEA_VERSION=2020.1.1 \
   TERM=xterm-256color \
-  CODE_SERVER_VERSION=3.2.0 \
+  CODE_SERVER_VERSION=3.3.1 \
   GOLANGCI_LINT_VERSION=1.25.1 \
   TERRAFORM_VERSION=0.12.24 \
   DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -124,7 +124,7 @@ RUN apt-get autoremove -y -qq && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install visual studio code server
-RUN wget https://github.com/cdr/code-server/releases/download/${CODE_SERVER_VERSION}/code-server-${CODE_SERVER_VERSION}-linux-x86_64.tar.gz && \
+RUN wget https://github.com/cdr/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server-${CODE_SERVER_VERSION}-linux-x86_64.tar.gz && \
   tar -zxf code-server-${CODE_SERVER_VERSION}-linux-x86_64.tar.gz --transform 's/code-server-.*-linux-x86_64/code-server/' && \
   rm -f code-server-${CODE_SERVER_VERSION}-linux-x86_64.tar.gz
 
