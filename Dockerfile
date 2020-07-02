@@ -6,15 +6,15 @@ ARG password
 ARG user=user
 
 ENV CT_VERSION=2.4.1 \
-  GO_VERSION=1.14.3 \
-  SBT_VERSION=1.3.10 \
-  PROTOC_VERSION=3.11.4 \
-  HELM_VERSION=3.2.0 \
-  IDEA_VERSION=2020.1.1 \
+  GO_VERSION=1.14.4 \
+  SBT_VERSION=1.3.13 \
+  PROTOC_VERSION=3.12.3 \
+  HELM_VERSION=3.2.4 \
+  IDEA_VERSION=2020.1.2 \
   TERM=xterm-256color \
-  CODE_SERVER_VERSION=3.3.1 \
-  GOLANGCI_LINT_VERSION=1.25.1 \
-  TERRAFORM_VERSION=0.12.24 \
+  CODE_SERVER_VERSION=3.4.1 \
+  GOLANGCI_LINT_VERSION=1.27.0 \
+  TERRAFORM_VERSION=0.12.28 \
   DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 RUN apt-get update && \
@@ -112,58 +112,21 @@ RUN wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform
 
 # Install .Net Core
 # Temporarily disable for now because Microsoft dropped the ball on this one, how unusual?
-# RUN wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
-#   dpkg -i packages-microsoft-prod.deb && \
-#   rm -f packages-microsoft-prod.deb && \
-#   add-apt-repository universe && \
-#   apt-get update && \
-#   DEBIAN_FRONTEND=noninteractive apt-get -y install dotnet-sdk-3.1
+RUN wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+  dpkg -i packages-microsoft-prod.deb && \
+  rm -f packages-microsoft-prod.deb && \
+  add-apt-repository universe && \
+  apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get -y install dotnet-sdk-3.1
 
 # Clean up apt
 RUN apt-get autoremove -y -qq && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install visual studio code server
-RUN wget https://github.com/cdr/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server-${CODE_SERVER_VERSION}-linux-x86_64.tar.gz && \
-  tar -zxf code-server-${CODE_SERVER_VERSION}-linux-x86_64.tar.gz --transform 's/code-server-.*-linux-x86_64/code-server/' && \
-  rm -f code-server-${CODE_SERVER_VERSION}-linux-x86_64.tar.gz
-
-# Install the vscode plugins
-RUN mkdir -p /code-server/extensions && \
-  mkdir -p /code-server/user-data/User && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension shan.code-settings-sync && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension ms-vscode.go --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension grapecity.gc-excelviewer --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension eamodio.gitlens --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension ckolkman.vscode-postgres --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension mechatroner.rainbow-csv --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension andyyaldoo.vscode-json --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension zxh404.vscode-proto3 --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension dotjoshjohnson.xml --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension redhat.vscode-yaml --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension donjayamanne.python-extension-pack --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension nodesource.vscode-for-node-js-development-pack --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension piotrpalarz.vscode-gitignore-generator --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension bungcip.better-toml --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension coenraads.bracket-pair-colorizer-2 --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension vadimcn.vscode-lldb --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension serayuzgur.crates --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension batisteo.vscode-django --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension ms-azuretools.vscode-docker --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension p1c2u.docker-compose --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension felipecaputo.git-project-manager --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension premparihar.gotestexplorer --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension oderwat.indent-rainbow --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension wholroyd.jinja --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension magicstack.magicpython --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension sdras.night-owl --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension fabiospampinato.vscode-projects-plus --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension fabiospampinato.vscode-projects-plus-todo-plus --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension ms-python.python --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension rust-lang.rust --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension hdevalke.rust-test-lens --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension polypus74.trusty-rusty-snippets --force && \
-  /code-server/code-server --extensions-dir /code-server/extensions --install-extension redhat.vscode-xml --force
+RUN wget https://github.com/cdr/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server-${CODE_SERVER_VERSION}-linux-amd64.tar.gz && \
+  tar -zxf code-server-${CODE_SERVER_VERSION}-linux-amd64.tar.gz --transform 's/code-server-.*-linux-amd64/code-server/' && \
+  rm -f code-server-${CODE_SERVER_VERSION}-linux-amd64.tar.gz
 
 # change ownership of the code-server to the container's user
 RUN chown -R ${user}:${user} /code-server
