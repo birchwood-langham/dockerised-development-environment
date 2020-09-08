@@ -5,16 +5,16 @@ LABEL maintainer="tan.quach@birchwoodlangham.com"
 ARG password
 ARG user=user
 
-ENV CT_VERSION=2.4.1 \
-  GO_VERSION=1.14.4 \
+ENV CT_VERSION=3.0.0 \
+  GO_VERSION=1.14.8 \
   SBT_VERSION=1.3.13 \
-  PROTOC_VERSION=3.12.3 \
+  PROTOC_VERSION=3.13.0 \
   HELM_VERSION=3.2.4 \
-  IDEA_VERSION=2020.1.2 \
+  IDEA_VERSION=2020.2.1 \
   TERM=xterm-256color \
-  CODE_SERVER_VERSION=3.4.1 \
-  GOLANGCI_LINT_VERSION=1.27.0 \
-  TERRAFORM_VERSION=0.12.28 \
+  CODE_SERVER_VERSION=3.5.0 \
+  GOLANGCI_LINT_VERSION=1.31.0 \
+  TERRAFORM_VERSION=0.13.2 \
   DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 RUN apt-get update && \
@@ -70,11 +70,13 @@ RUN curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add 
   DEBIAN_FRONTEND=noninteractive apt-get install -y kubectl
 
 # Install Helm
-RUN wget https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
-  tar xzf helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
-  mv linux-amd64/helm /usr/local/bin/ && \
-  rm -f helm-v${HELM_VERSION}-linux-amd64.tar.gz &&\
-  rm -fr linux-amd64
+RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+
+#RUN wget https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
+#  tar xzf helm-v${HELM_VERSION}-linux-amd64.tar.gz && \
+#  mv linux-amd64/helm /usr/local/bin/ && \
+#  rm -f helm-v${HELM_VERSION}-linux-amd64.tar.gz &&\
+#  rm -fr linux-amd64
 
 # Install Nodejs, Typescript and Yarn
 RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - && \
