@@ -128,7 +128,8 @@ RUN apt-get autoremove -y -qq && \
 # Install visual studio code server
 RUN wget https://github.com/cdr/code-server/releases/download/v${CODE_SERVER_VERSION}/code-server-${CODE_SERVER_VERSION}-linux-amd64.tar.gz && \
   tar -zxf code-server-${CODE_SERVER_VERSION}-linux-amd64.tar.gz --transform 's/code-server-.*-linux-amd64/code-server/' && \
-  rm -f code-server-${CODE_SERVER_VERSION}-linux-amd64.tar.gz
+  rm -f code-server-${CODE_SERVER_VERSION}-linux-amd64.tar.gz && \
+  mkdir -p /code-server/{extensions,user-data}
 
 # change ownership of the code-server to the container's user
 RUN chown -R ${user}:${user} /code-server
