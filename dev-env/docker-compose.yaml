@@ -154,4 +154,4 @@ services:
         target: /code-server/extensions
       - type: bind
         source: ${DEV_ENV_USER_FOLDER}
-        target: /code-server/user-data/User
+        target: /code-server/user-data

@@ -97,14 +97,14 @@ case $command in
     echo "Stack is now" $stackprofile
 
     export DEV_ENV_EXTENSIONS_FOLDER=${HOME}/${code_server_base_folder}/${stackprofile}/extensions
-    export DEV_ENV_USER_FOLDER=${HOME}/${code_server_base_folder}/${stackprofile}/user-data/User
+    export DEV_ENV_USER_FOLDER=${HOME}/${code_server_base_folder}/${stackprofile}/user-data
 
     if [[ ! -d ${DEV_ENV_EXTENSIONS_FOLDER} ]]; then
       mkdir -p ${DEV_ENV_EXTENSIONS_FOLDER}
     fi
 
     if [[ ! -d ${DEV_ENV_USER_FOLDER} ]]; then
-      mkdir -p ${DEV_ENV_USER_FOLDER}
+      mkdir -p ${DEV_ENV_USER_FOLDER}/{logs,User}
     fi
 
     case $1 in

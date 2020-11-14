@@ -205,7 +205,7 @@ RUN sudo chown -R ${user}:${user} . && \
 
 COPY entrypoint.sh /entrypoint.sh
 
-VOLUME [ "/code-server/extensions", "/code-server/user-data/User" ]
+VOLUME [ "/code-server/extensions", "/code-server/user-data" ]
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
