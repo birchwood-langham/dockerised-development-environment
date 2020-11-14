@@ -5,16 +5,16 @@ LABEL maintainer="tan.quach@birchwoodlangham.com"
 ARG password
 ARG user=user
 
-ENV CT_VERSION=3.0.0 \
-  GO_VERSION=1.14.8 \
-  SBT_VERSION=1.3.13 \
-  PROTOC_VERSION=3.13.0 \
-  HELM_VERSION=3.2.4 \
-  IDEA_VERSION=2020.2.1 \
+ENV CT_VERSION=3.3.0 \
+  GO_VERSION=1.15.5 \
+  SBT_VERSION=1.4.2 \
+  PROTOC_VERSION=3.14.0 \
+  HELM_VERSION=3.4.1 \
+  IDEA_VERSION=2020.2.3 \
   TERM=xterm-256color \
-  CODE_SERVER_VERSION=3.5.0 \
-  GOLANGCI_LINT_VERSION=1.31.0 \
-  TERRAFORM_VERSION=0.13.2 \
+  CODE_SERVER_VERSION=3.6.2 \
+  GOLANGCI_LINT_VERSION=1.32.2 \
+  TERRAFORM_VERSION=0.13.5 \
   DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 RUN apt-get update && \
@@ -79,7 +79,7 @@ RUN curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 |
 #  rm -fr linux-amd64
 
 # Install Nodejs, Typescript and Yarn
-RUN curl -sL https://deb.nodesource.com/setup_13.x | bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_15.x | bash - && \
   curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
   echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
   apt-get update && \

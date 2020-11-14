@@ -52,7 +52,7 @@ config_folder=".config/dev-env"
 code_server_base_folder=".config/code-server"
 
 if [[ -z $IDEA_VERSION ]]; then 
-  IDEA_VERSION="2020.1"
+  IDEA_VERSION="2020.2"
 fi
 
 # make sure the docker network exists, and create it if not
