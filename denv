@@ -6,7 +6,7 @@ usage() {
   echo "           stack - start a development stack"
   echo "                   options are:"
   echo "                       dev - a development stack with 1 kafka broker, 1 zookeeper etc."
-  echo "                       headless - dev stack without DISPLAY exposed to run on a headless server"
+  echo "                       hl - dev stack without DISPLAY exposed to run on a headless server"
   echo "                       full - a full stack with 3 kafka brokers, 3 zookeeper etc."
   echo "                   suboptions are:"
   echo "                       up [profile]    - crate and start the stack"
@@ -17,17 +17,17 @@ usage() {
   echo "           shell - start an interactive shell in the development environment container"
   echo "                   options are:"
   echo "                       dev <profile> - run an application installed on the dev stack"
-  echo "                       headless <profile> - run an application installed on the headless stack"
+  echo "                       hl <profile> - run an application installed on the headless stack"
   echo "                       full <profile> - run an application installed on the full stack"
   echo "                            <profile> is mandatory on all options, use default if you have not created a specific profile"
   echo "                   examples:"
   echo "                       denv shell dev default"
-  echo "                       denv shell headless work"
+  echo "                       denv shell hl work"
   echo "                       denv shell full myproject"
   echo "           run   - run an application from the development environment container"
   echo "                   options are:"
   echo "                       dev <profile> - run an application installed on the dev stack"
-  echo "                       headless <profile> - run an application installed on the headless stack"
+  echo "                       hl <profile> - run an application installed on the headless stack"
   echo "                       full <profile> - run an application installed on the full stack"
   echo "                            <profile> is mandatory on all options, use default if you have not created a specific profile"
   echo "                   suboptions are:"
@@ -39,7 +39,7 @@ usage() {
   echo "           exec  - execute a command from the development environment container"
   echo "                   options are:"
   echo "                       dev <profile> - run an application installed on the dev stack"
-  echo "                       headless <profile> - run an application installed on the headless stack"
+  echo "                       hl <profile> - run an application installed on the headless stack"
   echo "                       full <profile> - run an application installed on the full stack"
   echo "                            <profile> is mandatory on all options, use default if you have not created a specific profile"
   echo "                   suboptions are:"
@@ -148,7 +148,7 @@ case $command in
             usage;;
         esac
         ;;
-      headless)
+      hl)
         case $2 in 
           up)
             docker-compose -p hl_${stackprofile} -f ${HOME}/${config_folder}/docker-compose-headless.yaml up -d;;
