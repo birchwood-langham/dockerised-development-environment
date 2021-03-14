@@ -23,13 +23,11 @@ services:
   consul:
     image: consul
     hostname: consul
-    container_name: consul
     networks:
       - dev-net
     restart: on-failure
   redis:
     image: redis:latest
-    container_name: redis
     networks:
       - dev-net
     restart: on-failure
@@ -59,7 +57,6 @@ services:
     restart: on-failure
   postgres:
     image: postgres:latest
-    container_name: postgres
     networks:
       - dev-net
     volumes:
@@ -71,7 +68,6 @@ services:
       - 5432
   dev-env:
     image: birchwoodlangham/dockerised-development-environment:latest
-    container_name: dev-env
     networks:
       - dev-net
     environment:
