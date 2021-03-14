@@ -35,34 +35,6 @@ services:
     ports:
       - "6379:6379"
     restart: on-failure
-  # Micro API service for handling and routing Go-Micro based services
-  micro-api:
-    image: microhq/micro:latest
-    hostname: micro-api
-    container_name: micro-api
-    networks:
-      - dev-net
-    env_file:
-      - $HOME/.config/dev-env/envfiles/micro.env
-    command: ["api"]
-    ports:
-      - 8090:8080
-    restart: on-failure
-  # Micro Web service for monitoring Go-Micro based services
-  micro-web:
-    image: microhq/micro:latest
-    hostname: micro-web
-    container_name: micro-web
-    networks:
-      - dev-net
-    env_file:
-      - $HOME/.config/dev-env/envfiles/micro.env
-    ports:
-      - 8092:8082
-    command: ["web"]
-    depends_on:
-      - micro-api
-    restart: on-failure
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
     networks:
