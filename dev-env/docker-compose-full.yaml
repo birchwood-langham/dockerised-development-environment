@@ -32,8 +32,6 @@ services:
     container_name: redis
     networks:
       - dev-net
-    ports:
-      - "6379:6379"
     restart: on-failure
   zookeeper-1:
     image: confluentinc/cp-zookeeper:latest
