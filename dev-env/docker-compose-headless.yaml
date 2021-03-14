@@ -73,6 +73,7 @@ services:
       DBUS_SESSION_BUS_ADDRESS: unix:path=/var/run/user/1000/bus
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      HASHED_PASSWORD: ${CODE_SERVER_HASHED_PASSWORD}
     ipc: host
     ports:
       - 8080:8080
