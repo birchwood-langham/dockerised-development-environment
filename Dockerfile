@@ -176,7 +176,7 @@ RUN go get -u -v github.com/ramya-rao-a/go-outline  && \
   go get -u -v golang.org/x/tools/cmd/guru  && \
   go get -u -v github.com/josharian/impl  && \
   go get -u -v github.com/haya14busa/goplay/cmd/goplay  && \
-  go get -u -v github.com/uudashr/gopkgs/cmd/gopkgs  && \
+  go get -u -v github.com/uudashr/gopkgs/v2/cmd/gopkgs  && \
   go get -u -v github.com/davidrjenni/reftools/cmd/fillstruct  && \
   curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v${GOLANGCI_LINT_VERSION} && \
   GO111MODULE=on go get golang.org/x/tools/gopls@latest && \
