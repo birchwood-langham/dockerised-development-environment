@@ -11,7 +11,6 @@ networks:
 services:
   etcd:
     image: bitnami/etcd:latest
-    hostname: etcd
     networks:
       - dev-net
     environment:
@@ -23,45 +22,13 @@ services:
   consul:
     image: consul
     hostname: consul
-    container_name: consul
     networks:
       - dev-net
     restart: on-failure
   redis:
     image: redis:latest
-    container_name: redis
     networks:
       - dev-net
-    ports:
-      - "6379:6379"
-    restart: on-failure
-  # Micro API service for handling and routing Go-Micro based services
-  micro-api:
-    image: microhq/micro:latest
-    hostname: micro-api
-    networks:
-      - dev-net
-    container_name: micro-api
-    env_file:
-      - $HOME/.config/dev-env/envfiles/micro.env
-    command: ["api"]
-    ports:
-      - 8090:8080
-    restart: on-failure
-  # Micro Web service for monitoring Go-Micro based services
-  micro-web:
-    image: microhq/micro:latest
-    hostname: micro-web
-    container_name: micro-web
-    networks:
-      - dev-net
-    env_file:
-      - $HOME/.config/dev-env/envfiles/micro.env
-    ports:
-      - 8092:8082
-    command: ["web"]
-    depends_on:
-      - micro-api
     restart: on-failure
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
@@ -87,11 +54,8 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
     restart: on-failure
-    ports:
-      - 9092:9092
   postgres:
     image: postgres:latest
-    container_name: postgres
     networks:
       - dev-net
     volumes:
@@ -101,11 +65,8 @@ services:
       POSTGRES_PASSWORD: postgres
     expose:
       - 5432
-    ports:
-      - 5432:5432
   dev-env:
     image: birchwoodlangham/dockerised-development-environment:latest
-    container_name: dev-env
     networks:
       - dev-net
     environment:
