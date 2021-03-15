@@ -182,10 +182,20 @@ To pass your AWS credentials, you can edit pass them in as environment variables
 
 Alternatively, if you can mount the .aws folder from your host machine to the docker container.
 
+### Code Server password
+
+Password has been enabled on code server. To set the password, you first need to generate a SHA-256 hash for your password, then set the CODE_SERVER_HASHED_PASSWORD environment variable 
+so that it will be picked up by the docker-compose scripts, or pass the HASHED_PASSWORD environment variable to the docker image when using docker run.
+
+```bash
+docker run -d -v $HOME/code:/home/user/code -p 8080:8080 -e HASHED_PASSWORD=<your hashed password here> birchwoodlangham/dockerised-development-environment:latest
+```
+
 ## Change Log
 
 ============
 
+2021-03-15: Add plantuml for UML diagram visualization
 2021-03-14: Version bump and update helm install to use apt repo
 2020-07-02: Version bump and re-instate dotnet core now that the repos are working properly
 2020-04-30: Version bump for Go, IntelliJ etc.
