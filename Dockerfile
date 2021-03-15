@@ -121,6 +121,9 @@ RUN wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-p
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get -y install dotnet-sdk-3.1
 
+# Install Plant UML
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y plantuml
+
 # Clean up apt
 RUN apt-get autoremove -y -qq && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -186,7 +189,7 @@ RUN go get -u -v github.com/ramya-rao-a/go-outline  && \
   go get -u github.com/mgechev/revive
 
 # Use this one to install the plugins etc.
-COPY fonts /home/${user}/.local/share/.fonts
+COPY fonts /home/${user}/.fonts
 COPY dotfiles/zshrc /home/${user}/.zshrc
 COPY dotfiles/p10k.zsh /home/${user}/.p10k.zsh
 COPY dotfiles/Xdefaults /home/${user}/.Xdefaults
