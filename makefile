@@ -14,10 +14,14 @@ REPO ?= birchwoodlangham
 PROJECT ?= dockerised-development-environment
 TAG ?= $(shell git describe --tags --always --dirty | sed 's/-g[a-z0-9]\{7\}//')
 CONTAINER_NAME ?= ${DOCKER_REGISTRY}/${REPO}/${PROJECT}
+DOCKER_GROUP_ID ?= $(shell getent group docker | awk -F: '{print $3}')
 
 build:
-	docker build --build-arg user=${USER_NAME} -t birchwoodlangham/dockerised-development-environment:${TAG} .
-	docker tag birchwoodlangham/dockerised-development-environment:${TAG} birchwoodlangham/dockerised-development-environment:latest
+	docker build \
+	--build-arg user=${USER_NAME} \
+	--build-arg docker_group_id=${DOCKER_GROUP_ID} \
+	-t birchwoodlangham/dockerised-development-environment:${TAG} \
+	-t birchwoodlangham/dockerised-development-environment:latest .
 
 install:
 	mkdir -p ~/.config/dev-env/envfiles

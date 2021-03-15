@@ -4,6 +4,7 @@ LABEL maintainer="tan.quach@birchwoodlangham.com"
 
 ARG password
 ARG user=user
+ARG docker_group_id=docker_group_id
 
 ENV CT_VERSION=3.3.1 \
   GO_VERSION=1.16.2 \
@@ -33,6 +34,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing sudo zsh
 
 RUN locale-gen en_US.UTF-8 && \
   fc-cache -f
+
+# Setup the docker group id so that it matches the host
+RUN addgroup --system --gid ${docker_group_id} docker
 
 # Setup user
 RUN  useradd -d /home/${user} -m -U ${user} -G sudo -s /usr/bin/zsh 
