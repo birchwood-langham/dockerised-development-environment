@@ -28,11 +28,17 @@ install:
 	mkdir -p ~/.local/bin
 	mkdir -p ~/.config/code-server/default/extensions
 	mkdir -p ~/.config/code-server/default/user-data/User
+	mkdir -p ~/.config/systemd/user
 	cp dev-env/* ~/.config/dev-env
 	cp -R envfiles/* ~/.config/dev-env/envfiles
 	cp denv ~/.local/bin
+
 ifneq (,$(wildcard .env))		# Only copy the .env file if it exists
 	cp .env ~/.config/dev-env
+endif
+
+ifeq (,$(wildcard ~/.config/systemd/user/code-server.service)) # Only copy the code-server.service file if it doesn't exist
+	cp code-server.service ~/.config/systemd/user
 endif
 
 uninstall:
@@ -40,3 +46,5 @@ uninstall:
 	rm -rf ~/.config/dev-env/envfiles
 	rm -f ~/.local/bin/denv
 	rm -f ~/.config/dev-env/.env
+	rm -f ~/.config/systemd/user/code-server.service
+
