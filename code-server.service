@@ -11,7 +11,8 @@ Environment=VERSION=<Replace with the version>
 Environment=USERNAME=<replace with your user name>
 Environment=AWS_ACCESS_KEY_ID=<replace with your AWS access key id>
 Environment=AWS_SECRET_ACCESS_KEY=<replace with your AWS access key>
-Environment=IDEA_VERSION=2020.1
+Environment=IDEA_VERSION=2020.3
+Environment=CODE_SERVER_HASHED_PASSWORD=<your hashed password>
 
 ExecStart=docker-compose -p hl -f /home/<user>/.config/dev-env/docker-compose-headless.yaml up
 ExecStopPost=docker-compose -p hl -f /home/<user>/.config/dev-env/docker-compose-headless.yaml down

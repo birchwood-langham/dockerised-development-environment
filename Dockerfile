@@ -4,6 +4,7 @@ LABEL maintainer="tan.quach@birchwoodlangham.com"
 
 ARG password
 ARG user=user
+ARG docker_group_id=docker_group_id
 
 ENV CT_VERSION=3.3.1 \
   GO_VERSION=1.16.2 \
@@ -33,6 +34,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --fix-missing sudo zsh
 
 RUN locale-gen en_US.UTF-8 && \
   fc-cache -f
+
+# Setup the docker group id so that it matches the host
+RUN addgroup --system --gid ${docker_group_id} docker
 
 # Setup user
 RUN  useradd -d /home/${user} -m -U ${user} -G sudo -s /usr/bin/zsh 
@@ -121,6 +125,9 @@ RUN wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-p
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get -y install dotnet-sdk-3.1
 
+# Install Plant UML
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y plantuml
+
 # Clean up apt
 RUN apt-get autoremove -y -qq && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -186,7 +193,7 @@ RUN go get -u -v github.com/ramya-rao-a/go-outline  && \
   go get -u github.com/mgechev/revive
 
 # Use this one to install the plugins etc.
-COPY fonts /home/${user}/.local/share/.fonts
+COPY fonts /home/${user}/.fonts
 COPY dotfiles/zshrc /home/${user}/.zshrc
 COPY dotfiles/p10k.zsh /home/${user}/.p10k.zsh
 COPY dotfiles/Xdefaults /home/${user}/.Xdefaults
